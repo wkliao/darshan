@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+	<title>Darshan &#8211; HPC I/O Characterization Tool</title>
+<meta name='robots' content='max-image-preview:large' />
+	<style>img:is([sizes="auto" i], [sizes^="auto," i]) { contain-intrinsic-size: 3000px 1500px }</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1"><link href='https://fonts.gstatic.com' crossorigin rel='preconnect' />
+<link href='https://fonts.googleapis.com' crossorigin rel='preconnect' />
+		<!-- This site uses the Google Analytics by MonsterInsights plugin v9.5.3 - Using Analytics tracking - https://www.monsterinsights.com/ -->
+		<!-- Note: MonsterInsights is not currently configured on this site. The site owner needs to authenticate with Google Analytics in the MonsterInsights settings panel. -->
+					<!-- No tracking code set -->
+				<!-- / Google Analytics by MonsterInsights -->
+		<link rel='stylesheet' id='generate-fonts-css' href='//fonts.googleapis.com/css?family=Open+Sans%3A300%2C300italic%2Cregular%2Citalic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic' media='all' />
+<link rel='stylesheet' id='wp-block-library-css' href='css/style.min.css' media='all' />
+<style id='classic-theme-styles-inline-css'>
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+</style>
+<style id='global-styles-inline-css'>
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #ffffff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--contrast: var(--contrast);--wp--preset--color--contrast-2: var(--contrast-2);--wp--preset--color--contrast-3: var(--contrast-3);--wp--preset--color--base: var(--base);--wp--preset--color--base-2: var(--base-2);--wp--preset--color--base-3: var(--base-3);--wp--preset--color--accent: var(--accent);--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+:root :where(.wp-block-pullquote){font-size: 1.5em;line-height: 1.6;}
+</style>
+<link rel='stylesheet' id='generate-style-css' href='css/main.min.css' media='all' />
+<style id='generate-style-inline-css'>
+body{background-color:#efefef;color:#3a3a3a;}a{color:#1e73be;}a:hover, a:focus, a:active{color:#000000;}.wp-block-group__inner-container{max-width:1200px;margin-left:auto;margin-right:auto;}:root{--contrast:#222222;--contrast-2:#575760;--contrast-3:#b2b2be;--base:#f0f0f0;--base-2:#f7f8f9;--base-3:#ffffff;--accent:#1e73be;}:root .has-contrast-color{color:var(--contrast);}:root .has-contrast-background-color{background-color:var(--contrast);}:root .has-contrast-2-color{color:var(--contrast-2);}:root .has-contrast-2-background-color{background-color:var(--contrast-2);}:root .has-contrast-3-color{color:var(--contrast-3);}:root .has-contrast-3-background-color{background-color:var(--contrast-3);}:root .has-base-color{color:var(--base);}:root .has-base-background-color{background-color:var(--base);}:root .has-base-2-color{color:var(--base-2);}:root .has-base-2-background-color{background-color:var(--base-2);}:root .has-base-3-color{color:var(--base-3);}:root .has-base-3-background-color{background-color:var(--base-3);}:root .has-accent-color{color:var(--accent);}:root .has-accent-background-color{background-color:var(--accent);}body, button, input, select, textarea{font-family:"Open Sans", sans-serif;}body{line-height:1.5;}.entry-content > [class*="wp-block-"]:not(:last-child):not(.wp-block-heading){margin-bottom:1.5em;}.main-navigation .main-nav ul ul li a{font-size:14px;}.sidebar .widget, .footer-widgets .widget{font-size:17px;}@media (max-width:768px){h1{font-size:31px;}h2{font-size:27px;}h3{font-size:24px;}h4{font-size:22px;}h5{font-size:19px;}}.top-bar{background-color:#636363;color:#ffffff;}.top-bar a{color:#ffffff;}.top-bar a:hover{color:#303030;}.site-header{background-color:#ffffff;}.main-title a,.main-title a:hover{color:#222222;}.site-description{color:#757575;}.main-navigation,.main-navigation ul ul{background-color:#222222;}.main-navigation .main-nav ul li a, .main-navigation .menu-toggle, .main-navigation .menu-bar-items{color:#ffffff;}.main-navigation .main-nav ul li:not([class*="current-menu-"]):hover > a, .main-navigation .main-nav ul li:not([class*="current-menu-"]):focus > a, .main-navigation .main-nav ul li.sfHover:not([class*="current-menu-"]) > a, .main-navigation .menu-bar-item:hover > a, .main-navigation .menu-bar-item.sfHover > a{color:#ffffff;background-color:#3f3f3f;}button.menu-toggle:hover,button.menu-toggle:focus{color:#ffffff;}.main-navigation .main-nav ul li[class*="current-menu-"] > a{color:#ffffff;background-color:#3f3f3f;}.navigation-search input[type="search"],.navigation-search input[type="search"]:active, .navigation-search input[type="search"]:focus, .main-navigation .main-nav ul li.search-item.active > a, .main-navigation .menu-bar-items .search-item.active > a{color:#ffffff;background-color:#3f3f3f;}.main-navigation ul ul{background-color:#3f3f3f;}.main-navigation .main-nav ul ul li a{color:#ffffff;}.main-navigation .main-nav ul ul li:not([class*="current-menu-"]):hover > a,.main-navigation .main-nav ul ul li:not([class*="current-menu-"]):focus > a, .main-navigation .main-nav ul ul li.sfHover:not([class*="current-menu-"]) > a{color:#ffffff;background-color:#4f4f4f;}.main-navigation .main-nav ul ul li[class*="current-menu-"] > a{color:#ffffff;background-color:#4f4f4f;}.separate-containers .inside-article, .separate-containers .comments-area, .separate-containers .page-header, .one-container .container, .separate-containers .paging-navigation, .inside-page-header{background-color:#ffffff;}.entry-title a{color:#222222;}.entry-title a:hover{color:#55555e;}.entry-meta{color:#595959;}.sidebar .widget{background-color:#ffffff;}.footer-widgets{background-color:#ffffff;}.footer-widgets .widget-title{color:#000000;}.site-info{color:#ffffff;background-color:#55555e;}.site-info a{color:#ffffff;}.site-info a:hover{color:#d3d3d3;}.footer-bar .widget_nav_menu .current-menu-item a{color:#d3d3d3;}input[type="text"],input[type="email"],input[type="url"],input[type="password"],input[type="search"],input[type="tel"],input[type="number"],textarea,select{color:#666666;background-color:#fafafa;border-color:#cccccc;}input[type="text"]:focus,input[type="email"]:focus,input[type="url"]:focus,input[type="password"]:focus,input[type="search"]:focus,input[type="tel"]:focus,input[type="number"]:focus,textarea:focus,select:focus{color:#666666;background-color:#ffffff;border-color:#bfbfbf;}button,html input[type="button"],input[type="reset"],input[type="submit"],a.button,a.wp-block-button__link:not(.has-background){color:#ffffff;background-color:#55555e;}button:hover,html input[type="button"]:hover,input[type="reset"]:hover,input[type="submit"]:hover,a.button:hover,button:focus,html input[type="button"]:focus,input[type="reset"]:focus,input[type="submit"]:focus,a.button:focus,a.wp-block-button__link:not(.has-background):active,a.wp-block-button__link:not(.has-background):focus,a.wp-block-button__link:not(.has-background):hover{color:#ffffff;background-color:#3f4047;}a.generate-back-to-top{background-color:rgba( 0,0,0,0.4 );color:#ffffff;}a.generate-back-to-top:hover,a.generate-back-to-top:focus{background-color:rgba( 0,0,0,0.6 );color:#ffffff;}:root{--gp-search-modal-bg-color:var(--base-3);--gp-search-modal-text-color:var(--contrast);--gp-search-modal-overlay-bg-color:rgba(0,0,0,0.2);}@media (max-width:768px){.main-navigation .menu-bar-item:hover > a, .main-navigation .menu-bar-item.sfHover > a{background:none;color:#ffffff;}}.nav-below-header .main-navigation .inside-navigation.grid-container, .nav-above-header .main-navigation .inside-navigation.grid-container{padding:0px 20px 0px 20px;}.site-main .wp-block-group__inner-container{padding:40px;}.separate-containers .paging-navigation{padding-top:20px;padding-bottom:20px;}.entry-content .alignwide, body:not(.no-sidebar) .entry-content .alignfull{margin-left:-40px;width:calc(100% + 80px);max-width:calc(100% + 80px);}.rtl .menu-item-has-children .dropdown-menu-toggle{padding-left:20px;}.rtl .main-navigation .main-nav ul li.menu-item-has-children > a{padding-right:20px;}@media (max-width:768px){.separate-containers .inside-article, .separate-containers .comments-area, .separate-containers .page-header, .separate-containers .paging-navigation, .one-container .site-content, .inside-page-header{padding:30px;}.site-main .wp-block-group__inner-container{padding:30px;}.inside-top-bar{padding-right:30px;padding-left:30px;}.inside-header{padding-right:30px;padding-left:30px;}.widget-area .widget{padding-top:30px;padding-right:30px;padding-bottom:30px;padding-left:30px;}.footer-widgets-container{padding-top:30px;padding-right:30px;padding-bottom:30px;padding-left:30px;}.inside-site-info{padding-right:30px;padding-left:30px;}.entry-content .alignwide, body:not(.no-sidebar) .entry-content .alignfull{margin-left:-30px;width:calc(100% + 60px);max-width:calc(100% + 60px);}.one-container .site-main .paging-navigation{margin-bottom:20px;}}.is-right-sidebar{width:30%;}.is-left-sidebar{width:30%;}.site-content .content-area{width:70%;}@media (max-width:768px){.main-navigation .menu-toggle,.sidebar-nav-mobile:not(#sticky-placeholder){display:block;}.main-navigation ul,.gen-sidebar-nav,.main-navigation:not(.slideout-navigation):not(.toggled) .main-nav > ul,.has-inline-mobile-toggle #site-navigation .inside-navigation > *:not(.navigation-search):not(.main-nav){display:none;}.nav-align-right .inside-navigation,.nav-align-center .inside-navigation{justify-content:space-between;}}
+</style>
+<link rel='stylesheet' id='font-awesome-css' href='css/components/font-awesome.min.css' media='all' />
+<script src="js/jquery.min.js" id="jquery-core-js"></script>
+<script src="js/jquery-migrate.min.js" id="jquery-migrate-js"></script>
+<script id="file_uploads_nfpluginsettings-js-extra">
+var params = {"clearLogRestUrl":"https:\/\/www.mcs.anl.gov\/research\/projects\/darshan\/wp-json\/nf-file-uploads\/debug-log\/delete-all","clearLogButtonId":"file_uploads_clear_debug_logger","downloadLogRestUrl":"https:\/\/www.mcs.anl.gov\/research\/projects\/darshan\/wp-json\/nf-file-uploads\/debug-log\/get-all","downloadLogButtonId":"file_uploads_download_debug_logger"};
+</script>
+<script src="https://www.mcs.anl.gov/research/projects/darshan/wp-content/plugins/ninja-forms-uploads/assets/js/nfpluginsettings.js" id="file_uploads_nfpluginsettings-js"></script>
+<script src="https://www.mcs.anl.gov/research/projects/darshan/wp-content/plugins/stop-user-enumeration/frontend/js/frontend.js" id="stop-user-enumeration-js" defer data-wp-strategy="defer"></script>
+<link rel="https://api.w.org/" href="https://www.mcs.anl.gov/research/projects/darshan/wp-json/" /><style id="sccss"></style></head>
+
+<body class="home blog wp-custom-logo wp-embed-responsive wp-theme-generatepress right-sidebar nav-below-header separate-containers header-aligned-right dropdown-hover" itemtype="https://schema.org/Blog" itemscope>
+	<a class="screen-reader-text skip-link" href="#content" title="Skip to content">Skip to content</a>		<header class="site-header" id="masthead" aria-label="Site"  itemtype="https://schema.org/WPHeader" itemscope>
+			<div class="inside-header grid-container">
+				<div class="site-logo">
+					<a href="https://www.mcs.anl.gov/research/projects/darshan/" rel="home">
+						<img  class="header-image is-logo-image" alt="Darshan" src="images/darshan-web-logo.png" width="570" height="261" />
+					</a>
+				</div>			</div>
+		</header>
+				<nav class="main-navigation nav-align-center sub-menu-right" id="site-navigation" aria-label="Primary"  itemtype="https://schema.org/SiteNavigationElement" itemscope>
+			<div class="inside-navigation grid-container">
+								<button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false">
+					<span class="gp-icon icon-menu-bars"><svg viewBox="0 0 512 512" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"><path d="M0 96c0-13.255 10.745-24 24-24h464c13.255 0 24 10.745 24 24s-10.745 24-24 24H24c-13.255 0-24-10.745-24-24zm0 160c0-13.255 10.745-24 24-24h464c13.255 0 24 10.745 24 24s-10.745 24-24 24H24c-13.255 0-24-10.745-24-24zm0 160c0-13.255 10.745-24 24-24h464c13.255 0 24 10.745 24 24s-10.745 24-24 24H24c-13.255 0-24-10.745-24-24z" /></svg><svg viewBox="0 0 512 512" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"><path d="M71.029 71.029c9.373-9.372 24.569-9.372 33.942 0L256 222.059l151.029-151.03c9.373-9.372 24.569-9.372 33.942 0 9.372 9.373 9.372 24.569 0 33.942L289.941 256l151.03 151.029c9.372 9.373 9.372 24.569 0 33.942-9.373 9.372-24.569 9.372-33.942 0L256 289.941l-151.029 151.03c-9.373 9.372-24.569 9.372-33.942 0-9.372-9.373-9.372-24.569 0-33.942L222.059 256 71.029 104.971c-9.372-9.373-9.372-24.569 0-33.942z" /></svg></span><span class="mobile-menu">Menu</span>				</button>
+				<div id="primary-menu" class="main-nav"><ul id="menu-menu-1" class=" menu sf-menu"><li id="menu-item-1277" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1277"><a href="index.html">Home</a></li>
+<li id="menu-item-1276" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1276"><a href="publications/index.html">Publications</a></li>
+<li id="menu-item-1275" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1275"><a href="download/index.html">Download</a></li>
+<li id="menu-item-1274" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1274"><a href="documentation/index.html">Documentation</a></li>
+<li id="menu-item-1273" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1273"><a href="bug-reports/index.html">Bug reports</a></li>
+<li id="menu-item-1457" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1457"><a href="developer-access/index.html">Developer access</a></li>
+<li id="menu-item-1456" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1456"><a href="data/index.html">Data</a></li>
+<li id="menu-item-1278" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1278"><a href="tutorials/index.html">Tutorials</a></li>
+<li id="menu-item-1455" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1455"><a href="related-projects/index.html">Related Projects</a></li>
+</ul></div>			</div>
+		</nav>
+
+	<div class="site grid-container container hfeed" id="page">
+				<div class="site-content" id="content">
+
+	<div class="content-area" id="primary">
+		<main class="site-main" id="main">
+			<article id="post-16" class="post-16 post type-post status-publish format-standard sticky hentry category-uncategorized" itemtype="https://schema.org/CreativeWork" itemscope>
+	<div class="inside-article">
+					<header class="entry-header">
+				<h2 class="entry-title" itemprop="headline"><a href="index.html" rel="bookmark">Welcome to the Darshan project</a></h2>		<div class="entry-meta">
+			<span class="posted-on"><time class="updated" datetime="2023-02-07T21:15:24+00:00" itemprop="dateModified">February 7, 2023</time><time class="entry-date published" datetime="2009-07-31T10:33:05+00:00" itemprop="datePublished">July 31, 2009</time></span> <span class="byline">by <span class="author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope><a class="url fn n" href="https://www.mcs.anl.gov/research/projects/darshan/author/carns/" title="View all posts by carns" rel="author" itemprop="url"><span class="author-name" itemprop="name">carns</span></a></span></span> 		</div>
+					</header>
+
+			<div class="entry-content" itemprop="text">
+				<p>This is the home page for  Darshan, a scalable HPC I/O characterization tool. Darshan is designed to capture an accurate picture of application I/O behavior, including properties such as patterns of access within files, with minimum overhead.  The name is taken from a Sanskrit word for &#8220;sight&#8221; or &#8220;vision&#8221;.<br />
+Darshan can be used to investigate and tune the I/O behavior of complex HPC applications.  In addition, Darshan&#8217;s lightweight design makes it suitable for full time deployment for workload characterization of large systems.  We hope that such studies will help the storage research community to better serve the needs of scientific computing.<br />
+Darshan was originally developed on IBM Blue Gene series computers at the <a href="http://www.alcf.anl.gov">Argonne Leadership Computing Facility</a>, but today it is portable across a wide variety of platforms and is deployed in production at computing facilities around the world.<br />
+You will find current news about the Darshan project posted below.   Additional documentation and details about the Darshan are available from the links at the top of this page.</p>
+			</div>
+
+					<footer class="entry-meta" aria-label="Entry meta">
+			<span class="cat-links"><span class="gp-icon icon-categories"><svg viewBox="0 0 512 512" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"><path d="M0 112c0-26.51 21.49-48 48-48h110.014a48 48 0 0143.592 27.907l12.349 26.791A16 16 0 00228.486 128H464c26.51 0 48 21.49 48 48v224c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V112z" /></svg></span><span class="screen-reader-text">Categories </span><a href="https://www.mcs.anl.gov/research/projects/darshan/category/uncategorized/" rel="category tag">Uncategorized</a></span> 		</footer>
+			</div>
+</article>
+<article id="post-1662" class="post-1662 post type-post status-publish format-standard hentry category-uncategorized" itemtype="https://schema.org/CreativeWork" itemscope>
+	<div class="inside-article">
+					<header class="entry-header">
+				<h2 class="entry-title" itemprop="headline"><a href="https://www.mcs.anl.gov/research/projects/darshan/2025/05/13/darshan-3-4-7-release-is-now-available/" rel="bookmark">Darshan 3.4.7 release is now available</a></h2>		<div class="entry-meta">
+			<span class="posted-on"><time class="entry-date published" datetime="2025-05-13T16:35:22+00:00" itemprop="datePublished">May 13, 2025</time></span> <span class="byline">by <span class="author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope><a class="url fn n" href="https://www.mcs.anl.gov/research/projects/darshan/author/snyders/" title="View all posts by Snyder, Shane" rel="author" itemprop="url"><span class="author-name" itemprop="name">Snyder, Shane</span></a></span></span> 		</div>
+					</header>
+
+			<div class="entry-content" itemprop="text">
+
+<p>Darshan version 3.4.7 is now officially available for download <a href="https://www.mcs.anl.gov/research/projects/darshan/download/">HERE</a>. This point release most notably includes new modules enabling detailed instrumentation of DAOS storage systems (e.g., on ALCF Aurora):</p>
+
+
+
+<ul class="wp-block-list">
+<li>There are 2 new modules that instrument the DAOS file system interface (DFS) and native object interfaces (DAOS).</li>
+
+
+
+<li>Darshan&#8217;s heatmap module also now supports capture of I/O activity across both of these new DAOS modules.</li>
+</ul>
+
+
+
+<p>We have also released PyDarshan 3.4.7.0 on PyPI, which includes the following new capabilities:</p>
+
+
+
+<ul class="wp-block-list">
+<li>New PyDarshan CLI tools for extracting statistics from one or more input log files:
+<ul class="wp-block-list">
+<li><code>job_stats</code>: Overall job-level I/O statistics for each input Darshan log</li>
+
+
+
+<li><code>file_stats</code>: Overall file-level I/O statistics for application files accessed across all input Darshan logs</li>
+
+
+
+<li>Each tool offers command line options to control how jobs/files are sorted, statistics output format (CSV or Rich-style printing), Darshan module to analyze, etc.</li>
+</ul>
+</li>
+
+
+
+<li>Support for reading DAOS module data, as well as integrations of DAOS data into PyDarshan summary reports.</li>
+
+
+
+<li>Support for PyDarshan <code>ReportObject</code> name filtering, enabling users to provide record name patterns to match when reading data from Darshan logs.
+<ul class="wp-block-list">
+<li>Available via <code>filter_patterns</code> and <code>filter_mode</code> arguments to various <code>ReportObject</code> routines:
+<ul class="wp-block-list">
+<li><code>filter_patterns</code>: list of regexes to match</li>
+
+
+
+<li><code>filter_mode</code>: &#8220;exclude&#8221; or &#8220;include&#8221; records matching provided regexes</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+
+<p>Documentation for Darshan and PyDarshan is available <a href="https://www.mcs.anl.gov/research/projects/darshan/documentation/">HERE</a>.</p>
+
+
+
+<p>Please report any questions, issues, or concerns with this release on our Slack instance, using the <a href="https://lists.mcs.anl.gov/mailman/listinfo/darshan-users">Darshan-users mailing list</a>, or by opening an issue on our <a href="https://github.com/darshan-hpc/darshan">GitHub</a>.</p>
+			</div>
+
+					<footer class="entry-meta" aria-label="Entry meta">
+			<span class="cat-links"><span class="gp-icon icon-categories"><svg viewBox="0 0 512 512" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"><path d="M0 112c0-26.51 21.49-48 48-48h110.014a48 48 0 0143.592 27.907l12.349 26.791A16 16 0 00228.486 128H464c26.51 0 48 21.49 48 48v224c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V112z" /></svg></span><span class="screen-reader-text">Categories </span><a href="https://www.mcs.anl.gov/research/projects/darshan/category/uncategorized/" rel="category tag">Uncategorized</a></span> 		</footer>
+			</div>
+</article>
+<article id="post-1636" class="post-1636 post type-post status-publish format-standard hentry category-uncategorized" itemtype="https://schema.org/CreativeWork" itemscope>
+	<div class="inside-article">
+					<header class="entry-header">
+				<h2 class="entry-title" itemprop="headline"><a href="https://www.mcs.anl.gov/research/projects/darshan/2025/03/11/using-darshan-with-non-mpi-applications-e-g-ai-ml-frameworks/" rel="bookmark">Using Darshan with non-MPI applications (e.g., AI/ML frameworks)</a></h2>		<div class="entry-meta">
+			<span class="posted-on"><time class="entry-date published" datetime="2025-03-11T20:19:39+00:00" itemprop="datePublished">March 11, 2025</time></span> <span class="byline">by <span class="author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope><a class="url fn n" href="https://www.mcs.anl.gov/research/projects/darshan/author/snyders/" title="View all posts by Snyder, Shane" rel="author" itemprop="url"><span class="author-name" itemprop="name">Snyder, Shane</span></a></span></span> 		</div>
+					</header>
+
+			<div class="entry-content" itemprop="text">
+
+<p>Darshan is an application-level I/O characterization tool that has been traditionally used in the HPC community for understanding file access characteristics of MPI applications. However, in recent years Darshan has been redesigned to relax it’s dependence on MPI so that it can support instrumentation of other programming models and runtime environments that are gaining traction in HPC. In this article, we will cover some of these new improvements to Darshan and cover best practices for general instrumentation of applications that don’t use MPI, ranging from serial applications to Python multiprocessing frameworks (e.g., PyTorch, Dask, etc.).</p>
+
+
+
+<ul class="wp-block-list">
+<li><a href="#darshan-enhancements">Darshan enhancements for non-MPI usage</a></li>
+
+
+
+<li><a href="#best-practices">Best practices for non-MPI instrumentation in Darshan</a></li>
+
+
+
+<li><a href="#example-config">Example Darshan runtime library configuration</a></li>
+
+
+
+<li><a href="#future-work">Future work</a></li>
+</ul>
+
+
+
+<h2 class="wp-block-heading" id="darshan-enhancements">Darshan enhancements for non-MPI usage</h2>
+
+
+
+<p>Support for non-MPI instrumentation in Darshan began starting with our 3.2.0 release (thanks in large part to contributions from Glenn Lockwood, Microsoft). These changes revolved around adopting new mechanisms for bootstrapping the Darshan library when a process launches and shutting down the Darshan library when a process terminates. Traditionally, this was handled by intercepting <code>MPI_Init</code>/<code>MPI_Finalize</code> routines that MPI applications conveniently call at application startup/shutdown. To support more general mechanisms for this, Darshan adopted the usage of GCC constructor/destructor attributes<sup data-fn="9581e33d-936a-47fc-909d-d1f58e783714" class="fn"><a href="#9581e33d-936a-47fc-909d-d1f58e783714" id="9581e33d-936a-47fc-909d-d1f58e783714-link">1</a></sup> for its startup/shutdown routines. </p>
+
+
+
+<p>Beyond this initial redesign, additional changes have recently been made to the Darshan library based on our experiences in instrumenting various non-MPI applications (e.g., workflow systems, Python multiprocessing packages). These changes are outlined below.</p>
+
+
+
+<ol class="wp-block-list">
+<li>Processes that call <code>fork()</code>
+<ul class="wp-block-list">
+<li><strong>Problem</strong>: Child processes from <code>fork()</code> calls inherit their parent’s memory, including Darshan library state. This can lead to duplicate accounting of the parent’s I/O statistics in the child process’s log.</li>
+
+
+
+<li><strong>Solution</strong>: Use<em> </em><code>pthread_atfork()</code><em> </em>handlers to get hooks into child process initialization, allowing Darshan library state to be reinitialized. Initial support provided in Darshan’s 3.3.1 release.</li>
+</ul>
+</li>
+
+
+
+<li>Processes that terminate abruptly using <code>_exit()</code> calls
+<ul class="wp-block-list">
+<li><strong>Problem</strong>: Some multiprocessing frameworks use fork-join models that call “immediate” exit routines (i.e., <code>_exit()</code>). For example, we have observed this behavior in some configurations of Python’s <code>multiprocessing</code> package, which is commonly used by PyTorch and other frameworks. This immediate exit routine is generally used to prevent child processes from interfering with resources that may still be used by the parent process (e.g., by flushing buffers, calling <code>atexit</code> handlers, etc.). But, immediate exit also bypasses the Darshan library’s destructor routine which finalizes Darshan and writes out its log file.</li>
+
+
+
+<li><strong>Solution</strong>: Darshan has been updated to intercept calls to <code>_exit()</code><em> </em>in the same way it would traditionally intercept <code>MPI_Finalize()</code> for MPI applications. This change enables Darshan to cleanly shutdown before the process starts its immediate termination. Initial support provided in Darshan’s 3.4.5 release.</li>
+</ul>
+</li>
+
+
+
+<li>Processes that terminate abruptly via kill signals
+<ul class="wp-block-list">
+<li><strong>Problem</strong>: Some multiprocessing frameworks use fork-join models that simply terminate child processes via kill signals. We have also observed this behavior in some configurations of Python’s <code>multiprocessing</code> package. Termination via kill signals (i.e., <code>SIGTERM</code>) similarly bypasses Darshan’s typical shutdown procedure. Unfortunately, the only mechanism to interpose Darshan’s shutdown before this signal is using a signal handler, but the Darshan shutdown procedure is not async-signal-safe (i.e., it cannot be safely called in a signal handler). </li>
+
+
+
+<li><strong>Solution</strong>: Darshan actually has a longstanding optional feature to store its log data in memory-mapped files as the application executes, instead of storing this data on the heap and writing it out to a log file at process termination time. This feature was originally envisioned to support cases where MPI applications don’t call <code>MPI_Finalize()</code> (e.g., because they hit their wall-time limit on a batch scheduled system), but it actually helps preserve Darshan data in cases like this where processes are abruptly terminated. Initial support provided in Darshan’s 3.1.0 release.</li>
+</ul>
+</li>
+</ol>
+
+
+
+<h2 class="wp-block-heading" id="best-practices">Best practices for non-MPI instrumentation in Darshan</h2>
+
+
+
+<ol class="wp-block-list">
+<li>To take advantage of all of the extensions detailed above, use a Darshan release version >= <strong>3.4.5</strong>.</li>
+
+
+
+<li>When building darshan-runtime, enable the mmap logs feature to help protect against processes that abruptly terminate via kill signals.
+<ul class="wp-block-list">
+<li>For Spack builds, use the <code>+mmap_logs</code> variant.</li>
+
+
+
+<li>For darshan-runtime source builds, use the <code>--enable-mmap-logs</code> configure option.</li>
+</ul>
+</li>
+
+
+
+<li>To interpose the Darshan library, you have two options<sup data-fn="975afe9f-70b4-4df7-a951-07516e539f96" class="fn"><a href="#975afe9f-70b4-4df7-a951-07516e539f96" id="975afe9f-70b4-4df7-a951-07516e539f96-link">2</a></sup>:
+<ul class="wp-block-list">
+<li>Set <code>LD_PRELOAD=/path/to/darshan/lib/libdarshan.so</code> to ensure Darshan instrumentation wrappers can intercept application I/O routines.
+<ul class="wp-block-list">
+<li>This option is necessary for Python applications, as there is no way to directly link the Darshan library into the Python binary.</li>
+</ul>
+</li>
+
+
+
+<li>Directly link the Darshan library on the command line using <code>-ldarshan</code> when building your application.
+<ul class="wp-block-list">
+<li>Darshan should precede all other libraries to ensure it’s first in link ordering, otherwise it may not intercept application I/O calls.</li>
+</ul>
+</li>
+</ul>
+</li>
+
+
+
+<li>Enable Darshan’s non-MPI mode by setting <code>DARSHAN_ENABLE_NONMPI=1</code> in your environment.
+<ul class="wp-block-list">
+<li>non-MPI mode requires this variable to be explicitly set so Darshan doesn’t inadvertently generate log files for extraneous commands (e.g., <code>ls</code>, <code>git</code>, etc.).</li>
+
+
+
+<li>Instrumenting specific applications can then be accomplished by simply running  a command like: <code>DARSHAN_ENABLE_NONMPI=1 &lt;binary> &lt;cmd_args></code></li>
+</ul>
+</li>
+
+
+
+<li>If necessary, consider using Darshan library configuration files to increase Darshan’s default memory/record limits, to enable/disable certain Darshan modules, or to limit Darshan instrumentation to files matching some pattern (e.g., a mount point prefix, a file extension suffix).
+<ul class="wp-block-list">
+<li>This is particularly helpful for Python applications, which tend to access tons of shared libraries (.so), Python compiled code (.pyc), etc., which can quickly exhaust Darshan’s record memory.</li>
+
+
+
+<li>If using traditional Darshan tools like <code>darshan-parser</code> or the <a href="https://www.mcs.anl.gov/research/projects/darshan/docs/pydarshan/usage.html#darshan-job-summary-tool">PyDarshan job summary tool</a>, an error message is reported if Darshan ran out of memory, in which case this configuration file is needed to help ensure Darshan allocates and uses a sufficient amount of memory.</li>
+
+
+
+<li>See the next section for <a href="#example-config">example usage of config files</a>.</li>
+</ul>
+</li>
+
+
+
+<li>After your Darshan instrumented application terminates, check the <code>/tmp</code> directory (the default output location for Darshan mmap log files) for any Darshan logs generated by processes that terminate abruptly.
+<ul class="wp-block-list">
+<li>We recommend copying these log files somewhere permanent and compressing them in Darshan’s standard compressed format to save space using the <code>darshan-convert</code> utility, e.g.:
+<ul class="wp-block-list">
+<li><code>darshan-convert /tmp/logfile.darshan /path/to/darshan/log/dir/logfile.darshan</code></li>
+</ul>
+</li>
+
+
+
+<li>Processes that terminate normally do not output logs to <code>/tmp</code> and instead output the logs in standard compressed format in your standard Darshan log output directory. </li>
+</ul>
+</li>
+</ol>
+
+
+
+<h2 class="wp-block-heading" id="example-config">Example Darshan runtime library configuration</h2>
+
+
+
+<p>Darshan runtime library configuration options can be expressed using a configuration file that can be passed to Darshan at runtime by setting the following environment variable: <code>DARSHAN_CONFIG_PATH=/path/to/darshan.conf</code></p>
+
+
+
+<p>An example configuration file is given below that demonstrates the types of settings you can control within the Darshan runtime library. Not all settings may be needed, depending on your workload and your use case, and often times some experimentation is needed to determine appropriate settings. This is a necessary trade-off as Darshan is designed for low-overhead, comprehensive instrumentation of applications &#8212; increasing default memory limits or restricting scope of instrumentation are not our default operational modes.</p>
+
+
+
+<pre class="wp-block-code"><code># allocate 4096 file records for POSIX and MPI-IO modules
+# (Darshan only allocates 1024 per-module by default)
+# NOTE: MODMEM setting may need to be bumped independent of this setting,
+#             as it does not force Darshan to use a larger instrumentation buffer
+MAX_RECORDS     4096      POSIX,MPI-IO
+
+# in this case, we want all modules to ignore record names
+# with a ".pyc" or a ".so" file extension
+# NOTE: multiple regex patterns can be provided at once, separated by commas
+# NOTE: the '*' specifier can be used to apply settings for all modules
+NAME_EXCLUDE    \.pyc$,\.so$          *
+
+# bump up Darshan's default record memory usage to 8 MiB
+MODMEM  8
+
+# bump up Darshan's default name record memory usage to 2 MiB
+# NOTE: Darshan uses separate memory for storing record names (i..e, file names)
+#              that can also be exhausted, so this must be bumped independently of
+#              MODMEM in the case where lots of file name data is captured
+NAMEMEM 2
+
+# default modules not of interest can be disabled like this
+MOD_DISABLE     STDIO
+
+# non-default modules like DXT tracing modules can be enabled like this
+MOD_ENABLE      DXT_POSIX,DXT_MPIIO</code></pre>
+
+
+
+<p>More extensive details on Darshan configuration file format is provided <a href="https://www.mcs.anl.gov/research/projects/darshan/docs/darshan-runtime.html#_configuring_darshan_library_at_runtime">HERE</a>.</p>
+
+
+
+<h2 class="wp-block-heading" id="future-work">Future work</h2>
+
+
+
+<p>To help with the analysis of Darshan log data from multiprocessing frameworks that generate numerous Darshan logs, we are working to extend Darshan analysis tools to support aggregation of this data into single summary outputs. This will enable more comprehensive analysis of these frameworks, similar to how Darshan provides summaries of all processes in MPI applications in a single, concise summary. We expect our next release (3.4.7) to have some capabilities for analyzing data from multiple logs. Stay tuned for updates on this ongoing work. </p>
+
+
+<ol class="wp-block-footnotes"><li id="9581e33d-936a-47fc-909d-d1f58e783714"> <a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html">https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html</a> <a href="#9581e33d-936a-47fc-909d-d1f58e783714-link" aria-label="Jump to footnote reference 1">↩︎</a></li><li id="975afe9f-70b4-4df7-a951-07516e539f96"> Darshan’s non-MPI mode only works for dynamically-linked executables and requires a compiler that supports GCC constructor/destructor attributes (most do). <a href="#975afe9f-70b4-4df7-a951-07516e539f96-link" aria-label="Jump to footnote reference 2">↩︎</a></li></ol>
+
+
+<p></p>
+			</div>
+
+					<footer class="entry-meta" aria-label="Entry meta">
+			<span class="cat-links"><span class="gp-icon icon-categories"><svg viewBox="0 0 512 512" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"><path d="M0 112c0-26.51 21.49-48 48-48h110.014a48 48 0 0143.592 27.907l12.349 26.791A16 16 0 00228.486 128H464c26.51 0 48 21.49 48 48v224c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V112z" /></svg></span><span class="screen-reader-text">Categories </span><a href="https://www.mcs.anl.gov/research/projects/darshan/category/uncategorized/" rel="category tag">Uncategorized</a></span> 		</footer>
+			</div>
+</article>
+<article id="post-1633" class="post-1633 post type-post status-publish format-standard hentry category-uncategorized" itemtype="https://schema.org/CreativeWork" itemscope>
+	<div class="inside-article">
+					<header class="entry-header">
+				<h2 class="entry-title" itemprop="headline"><a href="https://www.mcs.anl.gov/research/projects/darshan/2024/10/17/darshan-3-4-6-release-is-now-available/" rel="bookmark">Darshan 3.4.6 release is now available</a></h2>		<div class="entry-meta">
+			<span class="posted-on"><time class="entry-date published" datetime="2024-10-17T21:22:34+00:00" itemprop="datePublished">October 17, 2024</time></span> <span class="byline">by <span class="author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope><a class="url fn n" href="https://www.mcs.anl.gov/research/projects/darshan/author/snyders/" title="View all posts by Snyder, Shane" rel="author" itemprop="url"><span class="author-name" itemprop="name">Snyder, Shane</span></a></span></span> 		</div>
+					</header>
+
+			<div class="entry-content" itemprop="text">
+
+<p>Darshan version 3.4.6 is now officially available for download <a href="https://www.mcs.anl.gov/research/projects/darshan/download/" target="_blank" rel="noreferrer noopener">HERE</a>. This point release includes a couple of important new capabilities and bug fixes:</p>
+
+
+
+<ul class="wp-block-list">
+<li>Added enhancements to Darshan&#8217;s Lustre instrumentation module to capture more extensive details on Lustre striping configurations
+<ul class="wp-block-list">
+<li>Lustre file records now composed of potentially multiple component counter sets (e.g., LUSTRE_COMP1_*, LUSTRE_COMP2_*, etc.)</li>
+
+
+
+<li>Allows full characterization of newer Lustre striping features, including progressive file layouts , data-on-metadata, file-level redundancy, and self-extending layouts</li>
+</ul>
+</li>
+
+
+
+<li>Fixed bugs in Darshan&#8217;s log compression/decompression routines that are triggered when using the zlib-ng software package, a new implementation of the zlib compression library
+<ul class="wp-block-list">
+<li>darshan-runtime bug fix corrects problematic log compression strategy</li>
+
+
+
+<li>darshan-util bug fix corrects logs already generated with this issue</li>
+</ul>
+</li>
+
+
+
+<li>Fixed bug leading to hangs when parsing improperly formatted Darshan runtime library configuration settings</li>
+</ul>
+
+
+
+<p>We have also released PyDarshan 3.4.6.0 on PyPI, though this is just to track the 3.4.6 darshan-util library. There are no modifications to PyDarshan functionality.</p>
+
+
+
+<p>Documentation for Darshan and PyDarshan is available <a href="https://www.mcs.anl.gov/research/projects/darshan/documentation/" target="_blank" rel="noreferrer noopener">HERE</a>.</p>
+
+
+
+<p>Please report any questions, issues, or concerns with this release on our Slack instance, using the <a href="https://lists.mcs.anl.gov/mailman/listinfo/darshan-users">Darshan-users mailing list</a>, or by opening an issue on our <a href="https://github.com/darshan-hpc/darshan">GitHub</a>.</p>
+			</div>
+
+					<footer class="entry-meta" aria-label="Entry meta">
+			<span class="cat-links"><span class="gp-icon icon-categories"><svg viewBox="0 0 512 512" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"><path d="M0 112c0-26.51 21.49-48 48-48h110.014a48 48 0 0143.592 27.907l12.349 26.791A16 16 0 00228.486 128H464c26.51 0 48 21.49 48 48v224c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V112z" /></svg></span><span class="screen-reader-text">Categories </span><a href="https://www.mcs.anl.gov/research/projects/darshan/category/uncategorized/" rel="category tag">Uncategorized</a></span> 		</footer>
+			</div>
+</article>
+<article id="post-1628" class="post-1628 post type-post status-publish format-standard hentry category-uncategorized" itemtype="https://schema.org/CreativeWork" itemscope>
+	<div class="inside-article">
+					<header class="entry-header">
+				<h2 class="entry-title" itemprop="headline"><a href="https://www.mcs.anl.gov/research/projects/darshan/2024/05/03/darshan-3-4-5-now-available/" rel="bookmark">Darshan 3.4.5 now available</a></h2>		<div class="entry-meta">
+			<span class="posted-on"><time class="updated" datetime="2024-05-03T19:37:06+00:00" itemprop="dateModified">May 3, 2024</time><time class="entry-date published" datetime="2024-05-03T17:18:30+00:00" itemprop="datePublished">May 3, 2024</time></span> <span class="byline">by <span class="author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope><a class="url fn n" href="https://www.mcs.anl.gov/research/projects/darshan/author/snyders/" title="View all posts by Snyder, Shane" rel="author" itemprop="url"><span class="author-name" itemprop="name">Snyder, Shane</span></a></span></span> 		</div>
+					</header>
+
+			<div class="entry-content" itemprop="text">
+
+<p>Darshan version 3.4.5 is now officially available for download <a href="https://www.mcs.anl.gov/research/projects/darshan/download/">HERE</a>. This point release includes a couple of important new capabilities and bug fixes:</p>
+
+
+
+<ul class="wp-block-list">
+<li>Added capability for Darshan&#8217;s runtime library to properly shutdown in non-MPI applications that call <code>_exit()&nbsp;</code>directly
+<ul class="wp-block-list">
+<li>This behavior has been commonly observed in the Python <code>multiprocessing</code>&nbsp;package, which has traditionally prevented Darshan from properly instrumenting applications that use it (e.g., the PyTorch DataLoader)</li>
+</ul>
+</li>
+
+
+
+<li>Added optional integration with the LDMS data/metrics collection system, allowing realtime analysis of Darshan instrumented I/O operations
+<ul class="wp-block-list">
+<li>For more details, see <a href="https://ovis-hpc.readthedocs.io/en/latest/ldms/ldms-streams.html#darshan">https://ovis-hpc.readthedocs.io/en/latest/ldms/ldms-streams.html#darshan</a></li>
+
+
+
+<li>Contributed by Sara Walton (SNL), Ana Luisa Solorzano (Northeastern), and the LDMS team</li>
+</ul>
+</li>
+
+
+
+<li>Fixed bug preventing instrumentation of <code>fscanf()</code>&nbsp;calls on some systems</li>
+
+
+
+<li>Fixed bug in HDF5 module causing any call to HDF5&#8217;s <code>H5Pset_fapl_mpio()</code> routine to fail&nbsp;</li>
+</ul>
+
+
+
+<p>We have also released PyDarshan 3.4.5.0 on PyPI, though this is just to track the 3.4.5 darshan-util library. There are no modifications to PyDarshan functionality.</p>
+
+
+
+<p>Documentation for Darshan and PyDarshan is available <a href="https://www.mcs.anl.gov/research/projects/darshan/documentation/">HERE</a>.</p>
+
+
+
+<p>Please report any questions, issues, or concerns with this release using the <a href="https://lists.mcs.anl.gov/mailman/listinfo/darshan-users">Darshan-users mailing list</a> or by opening an issue on our <a href="https://github.com/darshan-hpc/darshan">GitHub</a>.</p>
+			</div>
+
+					<footer class="entry-meta" aria-label="Entry meta">
+			<span class="cat-links"><span class="gp-icon icon-categories"><svg viewBox="0 0 512 512" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"><path d="M0 112c0-26.51 21.49-48 48-48h110.014a48 48 0 0143.592 27.907l12.349 26.791A16 16 0 00228.486 128H464c26.51 0 48 21.49 48 48v224c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V112z" /></svg></span><span class="screen-reader-text">Categories </span><a href="https://www.mcs.anl.gov/research/projects/darshan/category/uncategorized/" rel="category tag">Uncategorized</a></span> 		</footer>
+			</div>
+</article>
+<article id="post-1612" class="post-1612 post type-post status-publish format-standard hentry category-uncategorized" itemtype="https://schema.org/CreativeWork" itemscope>
+	<div class="inside-article">
+					<header class="entry-header">
+				<h2 class="entry-title" itemprop="headline"><a href="https://www.mcs.anl.gov/research/projects/darshan/2023/08/08/darshan-3-4-4-now-available/" rel="bookmark">Darshan 3.4.4 now available</a></h2>		<div class="entry-meta">
+			<span class="posted-on"><time class="entry-date published" datetime="2023-08-08T01:03:23+00:00" itemprop="datePublished">August 8, 2023</time></span> <span class="byline">by <span class="author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope><a class="url fn n" href="https://www.mcs.anl.gov/research/projects/darshan/author/snyders/" title="View all posts by Snyder, Shane" rel="author" itemprop="url"><span class="author-name" itemprop="name">Snyder, Shane</span></a></span></span> 		</div>
+					</header>
+
+			<div class="entry-content" itemprop="text">
+
+<p>Darshan version 3.4.4 is now officially available for download <a href="https://www.mcs.anl.gov/research/projects/darshan/download/">HERE</a>. This point release includes a few minor bug fixes:</p>
+
+
+
+<ul class="wp-block-list">
+<li>Fixed bug leading to inconsistent heatmap record shapes when Darshan shared file reductions are disabled
+<ul class="wp-block-list">
+<li>Also added a darshan-util library fix to resolve this inconsistency on already impacted logs (any generated with 3.4.0+ versions of Darshan)</li>
+</ul>
+</li>
+
+
+
+<li>Added workaround for potential undefined symbol errors for &#8216;H5FD_mpio_init&#8217; when LD_PRELOADing an HDF5-enabled runtime library
+<ul class="wp-block-list">
+<li>Bug triggered by 1.13+ versions of HDF5</li>
+</ul>
+</li>
+</ul>
+
+
+
+<p>We have also released PyDarshan 3.4.4.0 on PyPI, though this is just to track the 3.4.4 darshan-util library. There are no modifications to PyDarshan functionality.</p>
+
+
+
+<p>Documentation for Darshan and PyDarshan is available <a href="https://www.mcs.anl.gov/research/projects/darshan/documentation/">HERE</a>.</p>
+
+
+
+<p>Please report any questions, issues, or concerns with this release using the darshan-users mailing list or by opening an issue on our <a href="https://github.com/darshan-hpc/darshan">GitHub</a>.</p>
+			</div>
+
+					<footer class="entry-meta" aria-label="Entry meta">
+			<span class="cat-links"><span class="gp-icon icon-categories"><svg viewBox="0 0 512 512" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"><path d="M0 112c0-26.51 21.49-48 48-48h110.014a48 48 0 0143.592 27.907l12.349 26.791A16 16 0 00228.486 128H464c26.51 0 48 21.49 48 48v224c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V112z" /></svg></span><span class="screen-reader-text">Categories </span><a href="https://www.mcs.anl.gov/research/projects/darshan/category/uncategorized/" rel="category tag">Uncategorized</a></span> 		</footer>
+			</div>
+</article>
+<article id="post-1601" class="post-1601 post type-post status-publish format-standard hentry category-uncategorized" itemtype="https://schema.org/CreativeWork" itemscope>
+	<div class="inside-article">
+					<header class="entry-header">
+				<h2 class="entry-title" itemprop="headline"><a href="https://www.mcs.anl.gov/research/projects/darshan/2023/06/13/darshan-3-4-3-now-available/" rel="bookmark">Darshan 3.4.3 now available</a></h2>		<div class="entry-meta">
+			<span class="posted-on"><time class="entry-date published" datetime="2023-06-13T16:29:02+00:00" itemprop="datePublished">June 13, 2023</time></span> <span class="byline">by <span class="author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope><a class="url fn n" href="https://www.mcs.anl.gov/research/projects/darshan/author/snyders/" title="View all posts by Snyder, Shane" rel="author" itemprop="url"><span class="author-name" itemprop="name">Snyder, Shane</span></a></span></span> 		</div>
+					</header>
+
+			<div class="entry-content" itemprop="text">
+
+<p>Darshan version 3.4.3 is now officially available for download here: https://www.mcs.anl.gov/research/projects/darshan/download/. This point release includes a few minor bug fixes for darshan-runtime libraries:</p>
+
+
+
+<ul class="wp-block-list">
+<li>Added new configure option &#8216;&#8211;with-username-env&#8217; to allow specification of an env variable to use to find the username associated with a job (e.g., SLURM_JOB_USER)</li>
+
+
+
+<li>Fixed bug causing crashes for applications that call fork() and use Darshan app exclusions settings</li>
+
+
+
+<li>Fixed bug related to not closing open HDF5 file ID when instrumenting H5Fflush() calls</li>
+</ul>
+
+
+
+<p>More notably, we have also released PyDarshan 3.4.3.0 on PyPI, with this release including a number of improvements/changes to the log analysis package and corresponding tools:</p>
+
+
+
+<ul class="wp-block-list">
+<li>PyDarshan job summary tool improvements:
+<ul class="wp-block-list">
+<li>Added new module overview table</li>
+
+
+
+<li>Added new file count summary table</li>
+
+
+
+<li>Added new plot of POSIX module sequential/consecutive accesses</li>
+
+
+
+<li>Included PnetCDF `wait` time in I/O cost figures</li>
+
+
+
+<li>Dropped default generation of DXT-based heatmaps and added a new cmdline option to force generate them (&#8211;enable_dxt_heatmap)</li>
+
+
+
+<li>Dropped usage of scientific notation in &#8220;Data access by category&#8221; plot</li>
+
+
+
+<li>Made captions, axis labels, and annotations clearer and easier to read</li>
+</ul>
+</li>
+
+
+
+<li>Integrated Python support for darshan-util accumulator API for aggregating file records and calculating derived metrics
+<ul class="wp-block-list">
+<li>Added backend routine `accumulate_records`, which returns a derived metric structure and a summary record for an input set of records</li>
+
+
+
+<li>Added backend routine `_df_to_rec` to allow conversion of a DataFrame of records into raw byte arrays to pass into the darshan-util C library (e.g., for using accumulator API)</li>
+</ul>
+</li>
+
+
+
+<li>Fixed bug allowing binary wheel installs to prefer darshan-util libraries found in LD_LIBRARY_PATH</li>
+
+
+
+<li>Fixed bug in DXT heatmap plotting code related to determining the job&#8217;s runtime</li>
+
+
+
+<li>Updated docs for installation/usage of PyDarshan</li>
+
+
+
+<li>Dropped support for Python 3.6</li>
+</ul>
+
+
+
+<p>For reference, an example report generated by the updated PyDarshan job summary tool can be found here: https://www.mcs.anl.gov/research/projects/darshan/docs/e3sm_io_report.html.</p>
+
+
+
+<p>Documentation for Darshan and PyDarshan is available here: https://www.mcs.anl.gov/research/projects/darshan/documentation/.</p>
+
+
+
+<p>Please report any questions, issues, or concerns with this release using our mailing list, or by opening an issue on our GitHub: https://github.com/darshan-hpc/darshan.</p>
+			</div>
+
+					<footer class="entry-meta" aria-label="Entry meta">
+			<span class="cat-links"><span class="gp-icon icon-categories"><svg viewBox="0 0 512 512" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"><path d="M0 112c0-26.51 21.49-48 48-48h110.014a48 48 0 0143.592 27.907l12.349 26.791A16 16 0 00228.486 128H464c26.51 0 48 21.49 48 48v224c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V112z" /></svg></span><span class="screen-reader-text">Categories </span><a href="https://www.mcs.anl.gov/research/projects/darshan/category/uncategorized/" rel="category tag">Uncategorized</a></span> 		</footer>
+			</div>
+</article>
+<article id="post-1583" class="post-1583 post type-post status-publish format-standard hentry category-uncategorized" itemtype="https://schema.org/CreativeWork" itemscope>
+	<div class="inside-article">
+					<header class="entry-header">
+				<h2 class="entry-title" itemprop="headline"><a href="https://www.mcs.anl.gov/research/projects/darshan/2023/01/12/join-us-on-slack/" rel="bookmark">Join us on Slack</a></h2>		<div class="entry-meta">
+			<span class="posted-on"><time class="entry-date published" datetime="2023-01-12T22:01:33+00:00" itemprop="datePublished">January 12, 2023</time></span> <span class="byline">by <span class="author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope><a class="url fn n" href="https://www.mcs.anl.gov/research/projects/darshan/author/snyders/" title="View all posts by Snyder, Shane" rel="author" itemprop="url"><span class="author-name" itemprop="name">Snyder, Shane</span></a></span></span> 		</div>
+					</header>
+
+			<div class="entry-content" itemprop="text">
+
+<p>Follow the below invitation to join Darshan&#8217;s new Slack workspace:</p>
+
+
+
+<p><a href="https://join.slack.com/t/darshan-io/shared_invite/zt-1n6rhkqu8-waSQCVWYDrUpBdcg_1DwqQ">https://join.slack.com/t/darshan-io/shared_invite/zt-1n6rhkqu8-waSQCVWYDrUpBdcg_1DwqQ</a></p>
+
+
+
+<p>We hope this workspace will provide another opportunity for the Darshan team and users to engage, whether it be about bug reports, usage questions, feature requests, project roadmap, etc. The Darshan team will also use this workspace to get user feedback on upcoming Darshan enhancements and other changes, as well as to announce new software releases.</p>
+
+
+
+<p>Hope to see you there!</p>
+			</div>
+
+					<footer class="entry-meta" aria-label="Entry meta">
+			<span class="cat-links"><span class="gp-icon icon-categories"><svg viewBox="0 0 512 512" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"><path d="M0 112c0-26.51 21.49-48 48-48h110.014a48 48 0 0143.592 27.907l12.349 26.791A16 16 0 00228.486 128H464c26.51 0 48 21.49 48 48v224c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V112z" /></svg></span><span class="screen-reader-text">Categories </span><a href="https://www.mcs.anl.gov/research/projects/darshan/category/uncategorized/" rel="category tag">Uncategorized</a></span> 		</footer>
+			</div>
+</article>
+<article id="post-1581" class="post-1581 post type-post status-publish format-standard hentry category-uncategorized" itemtype="https://schema.org/CreativeWork" itemscope>
+	<div class="inside-article">
+					<header class="entry-header">
+				<h2 class="entry-title" itemprop="headline"><a href="https://www.mcs.anl.gov/research/projects/darshan/2022/12/16/darshan-3-4-2-release-is-now-available/" rel="bookmark">Darshan 3.4.2 release is now available</a></h2>		<div class="entry-meta">
+			<span class="posted-on"><time class="entry-date published" datetime="2022-12-16T23:13:28+00:00" itemprop="datePublished">December 16, 2022</time></span> <span class="byline">by <span class="author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope><a class="url fn n" href="https://www.mcs.anl.gov/research/projects/darshan/author/snyders/" title="View all posts by Snyder, Shane" rel="author" itemprop="url"><span class="author-name" itemprop="name">Snyder, Shane</span></a></span></span> 		</div>
+					</header>
+
+			<div class="entry-content" itemprop="text">
+
+<p>Darshan version 3.4.2 is now officially available for download <a href="https://ftp.mcs.anl.gov/pub/darshan/releases/darshan-3.4.1.tar.gz">here</a>. This point release includes important bug fixes for Darshan&#8217;s new PnetCDF module:</p>
+
+
+
+<ul class="wp-block-list">
+<li>Fixed segfault when defining scalar variables in PnetCDF module</li>
+
+
+
+<li>Fixed bug attributing all PnetCDF variable instrumentation to the first variable instrumented</li>
+
+
+
+<li>Fixed memory corruption (and potential segfault) when reading/writing high-dimensional PnetCDF variables using  vara/vars/varm interfaces</li>
+
+
+
+<li>Fixed crashes related to using PnetCDF vard interfaces with input MPI_DATATYPE_NULL datatypes</li>
+</ul>
+
+
+
+<p>Note that these bugs can only be triggered by the PnetCDF module released in Darshan version 3.4.1, which is disabled by default. There should be no impact on Darshan 3.4.1 configurations that did not explicitly enable PnetCDF instrumentation.</p>
+
+
+
+<p>We have also released PyDarshan 3.4.2.0 on PyPI, though this is just to track the 3.4.2 darshan-util library. There are no new modifications to PyDarshan functionality.</p>
+
+
+
+<p>Documentation for Darshan and PyDarshan is available <a href="https://www.mcs.anl.gov/research/projects/darshan/documentation/">here</a>.</p>
+
+
+
+<p>Please report any questions, issues, or concerns with this release using the darshan-users mailing list, or by opening an issue on our GitHub: <a href="https://github.com/darshan-hpc/darshan">https://github.com/darshan-hpc/darshan</a>.</p>
+			</div>
+
+					<footer class="entry-meta" aria-label="Entry meta">
+			<span class="cat-links"><span class="gp-icon icon-categories"><svg viewBox="0 0 512 512" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"><path d="M0 112c0-26.51 21.49-48 48-48h110.014a48 48 0 0143.592 27.907l12.349 26.791A16 16 0 00228.486 128H464c26.51 0 48 21.49 48 48v224c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V112z" /></svg></span><span class="screen-reader-text">Categories </span><a href="https://www.mcs.anl.gov/research/projects/darshan/category/uncategorized/" rel="category tag">Uncategorized</a></span> 		</footer>
+			</div>
+</article>
+<article id="post-1577" class="post-1577 post type-post status-publish format-standard hentry category-uncategorized" itemtype="https://schema.org/CreativeWork" itemscope>
+	<div class="inside-article">
+					<header class="entry-header">
+				<h2 class="entry-title" itemprop="headline"><a href="https://www.mcs.anl.gov/research/projects/darshan/2022/12/02/darshan-3-4-1-release-is-now-available/" rel="bookmark">Darshan 3.4.1 release is now available</a></h2>		<div class="entry-meta">
+			<span class="posted-on"><time class="entry-date published" datetime="2022-12-02T23:17:10+00:00" itemprop="datePublished">December 2, 2022</time></span> <span class="byline">by <span class="author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope><a class="url fn n" href="https://www.mcs.anl.gov/research/projects/darshan/author/snyders/" title="View all posts by Snyder, Shane" rel="author" itemprop="url"><span class="author-name" itemprop="name">Snyder, Shane</span></a></span></span> 		</div>
+					</header>
+
+			<div class="entry-content" itemprop="text">
+
+<p>Darshan version 3.4.1 is now officially available for download <a href="https://ftp.mcs.anl.gov/pub/darshan/releases/darshan-3.4.1.tar.gz">here</a>. This release includes the following new features, bug fixes, etc.:</p>
+
+
+
+<ul class="wp-block-list">
+<li>Added comprehensive instrumentation of PnetCDF APIs via PNETCDF_FILE and PNETCDF_VAR modules (contributed by Wei-Keng Liao)
+<ul class="wp-block-list">
+<li>disabled by default, enabled by passing `&#8211;enable-pnetcdf-mod` to configure</li>
+</ul>
+</li>
+
+
+
+<li>Modified Darshan log format to support a max of 64 instrumentation modules, since the current version of Darshan reached the old max (16)</li>
+
+
+
+<li>Modified Darshan to report job start/end times at nanosecond granularity (previously only second granularity was possible)</li>
+
+
+
+<li>Added support for instrumenting H5Oopen family of calls</li>
+
+
+
+<li>Modified HDF5 module extraction of dataspace selection details
+<ul class="wp-block-list">
+<li>Extraction of point selections now possible regardless of HDF5 version</li>
+
+
+
+<li>H5S_ALL selections are no longer counted as regular hyperslab accesses</li>
+</ul>
+</li>
+
+
+
+<li>Fixed bug causing no instrumentation of child processes of fork() calls (reported by Rui Wang)</li>
+
+
+
+<li>Deprecated &#8211;file-list and &#8211;file-list-detailed options in darshan-parser</li>
+
+
+
+<li>Added &#8220;darshan_accumulator&#8221; API to the logutils library
+<ul class="wp-block-list">
+<li>_create(), _inject(), _emit(), and _destroy()</li>
+
+
+
+<li>generalizes the mechanism for producing summation records and derived metrics for sets of records from a given module</li>
+
+
+
+<li>refactored darshan-parser to use new API</li>
+
+
+
+<li>implemented support for accumulators in POSIX, STDIO, and MPIIO modules</li>
+</ul>
+</li>
+
+
+
+<li>Fixed memory leak in darshan-util helper functions used by PyDarshan
+<ul class="wp-block-list">
+<li>darshan_log_get_name_records</li>
+
+
+
+<li>darshan_log_get_filtered_name_records</li>
+</ul>
+</li>
+
+
+
+<li>Integrated the µnit Testing Framework in darshan-util
+<ul class="wp-block-list">
+<li>implemented unit tests for darshan_accumlator API</li>
+</ul>
+</li>
+</ul>
+
+
+
+<p>We have also released PyDarshan 3.4.1.0 on PyPI, which includes a number of improvements:</p>
+
+
+
+<ul class="wp-block-list">
+<li>Fixed memory leaks in the following backend CFFI bindings (reported by Jesse Hines):
+<ul class="wp-block-list">
+<li>log_get_modules</li>
+
+
+
+<li>log_get_mounts</li>
+
+
+
+<li>log_get_record</li>
+
+
+
+<li>log_get_name_records</li>
+
+
+
+<li>log_lookup_name_records</li>
+</ul>
+</li>
+
+
+
+<li>Added PnetCDF module information to job summary tool</li>
+
+
+
+<li>Testing modifications:
+<ul class="wp-block-list">
+<li>Switched to use of context managers for log Report objects to avoid test hangs in certain environments</li>
+
+
+
+<li>Marked tests requiring lxml package as xfail when not installed</li>
+</ul>
+</li>
+</ul>
+
+
+
+<p>Documentation for Darshan and PyDarshan is available <a href="https://www.mcs.anl.gov/research/projects/darshan/documentation/">here</a>.</p>
+
+
+
+<p>Please report any questions, issues, or concerns with this release using the darshan-users mailing list, or by opening an issue on our GitHub: <a href="https://github.com/darshan-hpc/darshan">https://github.com/darshan-hpc/darshan</a>.</p>
+			</div>
+
+					<footer class="entry-meta" aria-label="Entry meta">
+			<span class="cat-links"><span class="gp-icon icon-categories"><svg viewBox="0 0 512 512" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"><path d="M0 112c0-26.51 21.49-48 48-48h110.014a48 48 0 0143.592 27.907l12.349 26.791A16 16 0 00228.486 128H464c26.51 0 48 21.49 48 48v224c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V112z" /></svg></span><span class="screen-reader-text">Categories </span><a href="https://www.mcs.anl.gov/research/projects/darshan/category/uncategorized/" rel="category tag">Uncategorized</a></span> 		</footer>
+			</div>
+</article>
+<article id="post-1572" class="post-1572 post type-post status-publish format-standard hentry category-uncategorized" itemtype="https://schema.org/CreativeWork" itemscope>
+	<div class="inside-article">
+					<header class="entry-header">
+				<h2 class="entry-title" itemprop="headline"><a href="https://www.mcs.anl.gov/research/projects/darshan/2022/07/21/darshan-3-4-0-release-is-now-available/" rel="bookmark">Darshan 3.4.0 release is now available</a></h2>		<div class="entry-meta">
+			<span class="posted-on"><time class="entry-date published" datetime="2022-07-21T14:27:27+00:00" itemprop="datePublished">July 21, 2022</time></span> <span class="byline">by <span class="author vcard" itemprop="author" itemtype="https://schema.org/Person" itemscope><a class="url fn n" href="https://www.mcs.anl.gov/research/projects/darshan/author/snyders/" title="View all posts by Snyder, Shane" rel="author" itemprop="url"><span class="author-name" itemprop="name">Snyder, Shane</span></a></span></span> 		</div>
+					</header>
+
+			<div class="entry-content" itemprop="text">
+
+<p>Darshan version 3.4.0 is now officially available for download <a href="https://ftp.mcs.anl.gov/pub/darshan/releases/darshan-3.4.0.tar.gz">here</a>. This release is a follow-up to our recent 3.4.0-pre1 pre-release, and we believe it is stable and ready for production use. In addition to features and bug fixes introduced in 3.4.0-pre1, this full release includes the following bug fixes to Darshan libraries/tools:</p>
+
+
+
+<ul class="wp-block-list"><li>Fix segfault affecting new DARSHAN_MOD_DISABLE/ENABLE environment variables</li><li>Fix divide-by-zero condition that can potentially be triggered by new heatmap module</li><li>Fix potential MPI errors related to calling MPI_Type_size() on a user-supplied MPI_DATATYPE_NULL type (reported by Jim Edwards)</li><li>cuserid() is no longer the default method for determining username, and must be manually enabled at configure time</li><li>Fix backwards compatibility bug affecting darshan-3.0.0 logs in darshan-util C library functions used by PyDarshan</li><li>Suppress noisy output warnings when using darshan-job-summary.pl</li><li>Clarify units displayed by darshan-job-summary.pl (reported by Jeff Layton)</li></ul>
+
+
+
+<p>We have also released PyDarshan 3.4.0.1 on PyPI, which includes a number of improvements:</p>
+
+
+
+<ul class="wp-block-list"><li>New Darshan job summary report styling<ul><li>HTML job summary reports can be generated using: <code>python -m darshan summary &lt;logfile_path></code></li></ul></li><li>Bug fix to heatmap module plotting code caused by logs with inactive ranks</li><li>Fix warnings related to Pandas deprecation of df.append</li></ul>
+
+
+
+<p>Documentation for Darshan and PyDarshan is available <a href="https://www.mcs.anl.gov/research/projects/darshan/documentation/">here</a>.</p>
+
+
+
+<p>Please report any questions, issues, or concerns with this release using the darshan-users mailing list, or by opening an issue on our GitHub: <a href="https://github.com/darshan-hpc/darshan">https://github.com/darshan-hpc/darshan</a>.</p>
+			</div>
+
+					<footer class="entry-meta" aria-label="Entry meta">
+			<span class="cat-links"><span class="gp-icon icon-categories"><svg viewBox="0 0 512 512" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"><path d="M0 112c0-26.51 21.49-48 48-48h110.014a48 48 0 0143.592 27.907l12.349 26.791A16 16 0 00228.486 128H464c26.51 0 48 21.49 48 48v224c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V112z" /></svg></span><span class="screen-reader-text">Categories </span><a href="https://www.mcs.anl.gov/research/projects/darshan/category/uncategorized/" rel="category tag">Uncategorized</a></span> 		</footer>
+			</div>
+</article>
+		<nav id="nav-below" class="paging-navigation" aria-label="Archive Page">
+								<div class="nav-previous">
+						<span class="gp-icon icon-arrow"><svg viewBox="0 0 330 512" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"><path d="M305.913 197.085c0 2.266-1.133 4.815-2.833 6.514L171.087 335.593c-1.7 1.7-4.249 2.832-6.515 2.832s-4.815-1.133-6.515-2.832L26.064 203.599c-1.7-1.7-2.832-4.248-2.832-6.514s1.132-4.816 2.832-6.515l14.162-14.163c1.7-1.699 3.966-2.832 6.515-2.832 2.266 0 4.815 1.133 6.515 2.832l111.316 111.317 111.316-111.317c1.7-1.699 4.249-2.832 6.515-2.832s4.815 1.133 6.515 2.832l14.162 14.163c1.7 1.7 2.833 4.249 2.833 6.515z" /></svg></span>						<span class="prev" title="Previous"><a href="https://www.mcs.anl.gov/research/projects/darshan/page/2/" >Older posts</a></span>
+					</div>
+					<div class="nav-links"><span aria-current="page" class="page-numbers current"><span class="screen-reader-text">Page</span>1</span>
+<a class="page-numbers" href="https://www.mcs.anl.gov/research/projects/darshan/page/2/"><span class="screen-reader-text">Page</span>2</a>
+<span class="page-numbers dots">&hellip;</span>
+<a class="page-numbers" href="https://www.mcs.anl.gov/research/projects/darshan/page/11/"><span class="screen-reader-text">Page</span>11</a>
+<a class="next page-numbers" href="https://www.mcs.anl.gov/research/projects/darshan/page/2/">Next <span aria-hidden="true">&rarr;</span></a></div>		</nav>
+				</main>
+	</div>
+
+	<div class="widget-area sidebar is-right-sidebar" id="right-sidebar">
+	<div class="inside-right-sidebar">
+		<aside id="media_image-3" class="widget inner-padding widget_media_image"><a href="https://www.anl.gov/mcs/article/darshan-wins-rd-100-award-for-2018"><img width="234" height="300" src="images/RD100_2018Winner_Logo.eps_-234x300.png" class="image wp-image-1266  attachment-medium size-medium" alt="" style="max-width: 100%; height: auto;" decoding="async" loading="lazy" srcset="https://www.mcs.anl.gov/research/projects/darshan/wp-content/uploads/sites/54/2018/12/RD100_2018Winner_Logo.eps_-234x300.png 234w, https://www.mcs.anl.gov/research/projects/darshan/wp-content/uploads/sites/54/2018/12/RD100_2018Winner_Logo.eps_.png 468w" sizes="auto, (max-width: 234px) 100vw, 234px" /></a></aside><aside id="text-3" class="widget inner-padding widget_text"><h2 class="widget-title">Contact Information</h2>			<div class="textwidget"><p>Please use the <a href="https://lists.mcs.anl.gov/mailman/listinfo/darshan-users">Darshan mailing list</a> or the <a href="https://join.slack.com/t/darshan-io/shared_invite/zt-1n6rhkqu8-waSQCVWYDrUpBdcg_1DwqQ">Darshan slack workspace</a> for questions, comments, and bug reports.  More contact information can also be found on the <a href="https://www.anl.gov/mcs/darshan-hpc-io-characterization-tool">Darshan project page</a> at MCS.</p>
+<p><img loading="lazy" decoding="async" class=" wp-image-328 aligncenter" src="images/email.png" alt="" width="81" height="65" /></p>
+<p><img loading="lazy" decoding="async" class="wp-image-326 aligncenter" src="images/Slack_Mark_Web-1.png" alt="" width="70" height="70" /></p>
+</div>
+		</aside><aside id="text-4" class="widget inner-padding widget_text"><h2 class="widget-title">Acknowledgments</h2>			<div class="textwidget"><p>This work was supported by the Office of Advanced Scientific Computing Research, Office of Science, U.S. Department of Energy, under Contract<br />
+DE-AC02-06CH11357.</p>
+</div>
+		</aside>	</div>
+</div>
+
+	</div>
+</div>
+
+
+<div class="site-footer">
+			<footer class="site-info" aria-label="Site"  itemtype="https://schema.org/WPFooter" itemscope>
+			<div class="inside-site-info grid-container">
+								<div class="copyright-bar">
+					<span class="copyright">&copy; 2025 Darshan</span> &bull; Built with <a href="https://generatepress.com" itemprop="url">GeneratePress</a>				</div>
+			</div>
+		</footer>
+		</div>
+
+<script type="speculationrules">
+{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"\/darshan\/*"},{"not":{"href_matches":["\/darshan\/wp-*.php","\/darshan\/wp-admin\/*","\/darshan\/wp-content\/uploads\/sites\/54\/*","\/darshan\/wp-content\/*","\/darshan\/wp-content\/plugins\/*","\/darshan\/wp-content\/themes\/generatepress\/*","\/darshan\/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
+</script>
+<script id="generate-a11y">!function(){"use strict";if("querySelector"in document&&"addEventListener"in window){var e=document.body;e.addEventListener("mousedown",function(){e.classList.add("using-mouse")}),e.addEventListener("keydown",function(){e.classList.remove("using-mouse")})}}();</script><!--[if lte IE 11]>
+<script src="https://www.mcs.anl.gov/research/projects/darshan/wp-content/themes/generatepress/assets/js/classList.min.js" id="generate-classlist-js"></script>
+<![endif]-->
+<script id="generate-menu-js-extra">
+var generatepressMenu = {"toggleOpenedSubMenus":"1","openSubMenuLabel":"Open Sub-Menu","closeSubMenuLabel":"Close Sub-Menu"};
+</script>
+<script src="https://www.mcs.anl.gov/research/projects/darshan/wp-content/themes/generatepress/assets/js/menu.min.js" id="generate-menu-js"></script>
+
+</body>
+</html>
