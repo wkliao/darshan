@@ -13,8 +13,6 @@ DARSHAN_SHARE_PATH="@datarootdir@"
 DARSHAN_LD_FLAGS="@LDFLAGS@"
 DARSHAN_LOG_PATH="@__DARSHAN_LOG_PATH@"
 DARSHAN_LOG_ENV="@__DARSHAN_LOG_ENV@"
-DARSHAN_LUSTRE_LD_FLAGS="@DARSHAN_LUSTRE_LD_FLAGS@"
-DARSHAN_HDF5_LD_FLAGS="@DARSHAN_HDF5_LD_FLAGS@"
 
 C_COMPILER="@CC@"
 C_COMPILER=`echo "$C_COMPILER" | sed -e 's/^[ \t]*//'`
@@ -134,14 +132,14 @@ all()
 #   resolve indirect dependencies on PnetCDF and HDF5 symbols (if the
 #   app used a library which in turn used one of those HLLs).
 
-PRE_LD_FLAGS="-L$DARSHAN_LIB_PATH $DARSHAN_LD_FLAGS -ldarshan -lz -Wl,$DARSHAN_SHARE_PATH/ld-opts/darshan-ld-opts"
-POST_LD_FLAGS="-L$DARSHAN_LIB_PATH -ldarshan $DARSHAN_LUSTRE_LD_FLAGS -lz -lrt -lpthread -lm"
+PRE_LD_FLAGS="-L$DARSHAN_LIB_PATH $DARSHAN_LD_FLAGS -ldarshan -lz -Wl,@$DARSHAN_SHARE_PATH/ld-opts/darshan-ld-opts"
+POST_LD_FLAGS="-L$DARSHAN_LIB_PATH -ldarshan @DARSHAN_LUSTRE_LD_FLAGS@ -lz -lrt -lpthread -lm"
 
 # NOTE:
 # - when dynamic linking there is no need for wrapping options, we simply
 #   need to get the darshan symbol definitions early enough in the link
 #   order.  We also set no-as-needed for linkers that may not identify
-DYN_LD_FLAGS="-L$DARSHAN_LIB_PATH $DARSHAN_LD_FLAGS -Wl,-rpath=$DARSHAN_LIB_PATH -Wl,-no-as-needed -ldarshan $DARSHAN_LUSTRE_LD_FLAGS $DARSHAN_HDF5_LD_FLAGS"
+DYN_LD_FLAGS="-L$DARSHAN_LIB_PATH $DARSHAN_LD_FLAGS -Wl,-rpath=$DARSHAN_LIB_PATH -Wl,-no-as-needed -ldarshan @DARSHAN_LUSTRE_LD_FLAGS@ @DARSHAN_HDF5_LD_FLAGS@"
 
 # NOTE:
 # - construct complete list of log path options, separated by commas.
