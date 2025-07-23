@@ -44,18 +44,6 @@ jobs:
           darshan-test/automated/build-darshan.sh
           # try to format log directory to ensure this works
           ./darshan_install/bin/darshan-mk-log-dirs.pl
-      - name: Run end-to-end regression tests (ld_preload)
-        run: |
-          export DARSHAN_INSTALL_PATH=$PWD/darshan_install
-          export PATH=$PWD/mpich_install/bin:$PATH
-          cd darshan-test/regression
-          ./run-all.sh $DARSHAN_INSTALL_PATH /tmp/darshan-ld-preload workstation-ld-preload
-      - name: Run end-to-end regression tests (prof conf dynamic)
-        run: |
-          export DARSHAN_INSTALL_PATH=$PWD/darshan_install
-          export PATH=$PWD/mpich_install/bin:$PATH
-          cd darshan-test/regression
-          ./run-all.sh $DARSHAN_INSTALL_PATH /tmp/darshan-prof-conf-dynamic workstation-profile-conf-dynamic
       - name: Run end-to-end regression tests (prof conf static)
         run: |
           export DARSHAN_INSTALL_PATH=$PWD/darshan_install

@@ -2,6 +2,8 @@
 
 PROG=access-size-counter-test
 
+set -x
+
 # set log file path; remove previous log if present
 export DARSHAN_LOGFILE=$DARSHAN_TMP/${PROG}.darshan
 rm -f ${DARSHAN_LOGFILE}
