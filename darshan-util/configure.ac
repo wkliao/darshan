@@ -99,9 +99,16 @@ if test "x$enable_darshan_util" = xyes ; then
       [], [enable_apxc_mod=no]
    )
    if test "x$enable_apxc_mod" = xyes; then
+      ac_cv_file_APXC_LOG_FORMAT_H=0
       AC_CHECK_FILE([${ac_abs_confdir}/../modules/autoperf/apxc/darshan-apxc-log-format.h],
-                      DARSHAN_USE_APXC=1,
-                      [AC_MSG_ERROR([The autoperf APXC module is not present])])
+                    [ac_cv_file_APXC_LOG_FORMAT_H=1])
+      AC_CHECK_FILE([${ac_abs_confdir}/modules/autoperf/apxc/darshan-apxc-log-format.h],
+                    [ac_cv_file_APXC_LOG_FORMAT_H=1])
+      if test "x$ac_cv_file_APXC_LOG_FORMAT_H" = x0 ; then
+         AC_MSG_ERROR([The Autoperf XC git submodule is not present])
+      else
+         DARSHAN_USE_APXC=1
+      fi
    fi
    AC_ARG_ENABLE([apmpi_mod],
       [AS_HELP_STRING([--enable-apmpi-mod],
@@ -109,9 +116,16 @@ if test "x$enable_darshan_util" = xyes ; then
       [], [enable_apmpi_mod=no]
    )
    if test "x$enable_apmpi_mod" = xyes; then
+      ac_cv_file_APMPI_LOG_FORMAT_H=0
       AC_CHECK_FILE([${ac_abs_confdir}/../modules/autoperf/apmpi/darshan-apmpi-log-format.h],
-                    DARSHAN_USE_APMPI=1,
-                    [AC_MSG_ERROR([The autoperf MPI module is not present])])
+                    [ac_cv_file_APMPI_LOG_FORMAT_H=1])
+      AC_CHECK_FILE([${ac_abs_confdir}/modules/autoperf/apmpi/darshan-apmpi-log-format.h],
+                    [ac_cv_file_APMPI_LOG_FORMAT_H=1])
+      if test "x$ac_cv_file_APMPI_LOG_FORMAT_H" = x0 ; then
+         AC_MSG_ERROR([The Autoperf MPI module is not present])
+      else
+         DARSHAN_USE_APMPI=1
+      fi
    fi
 
    AC_CHECK_FUNCS([strndup])

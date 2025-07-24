@@ -300,9 +300,14 @@ if test "x$enable_darshan_runtime" = xyes ; then
          AC_MSG_ERROR([--enable-apmpi-mod Autoperf MPI module requires MPI support])
       fi
       abssrcdir=$(readlink -f ${srcdir})
+      ac_cv_file_APMPI_LOG_FORMAT_H=0
       AC_CHECK_FILE([${abssrcdir}/../modules/autoperf/apmpi/darshan-apmpi-log-format.h],
-                    [],
-                    [AC_MSG_ERROR([The Autoperf MPI module is not present])])
+                    [ac_cv_file_APMPI_LOG_FORMAT_H=1])
+      AC_CHECK_FILE([${abssrcdir}/modules/autoperf/apmpi/darshan-apmpi-log-format.h],
+                    [ac_cv_file_APMPI_LOG_FORMAT_H=1])
+      if test "x$ac_cv_file_APMPI_LOG_FORMAT_H" = x0 ; then
+         AC_MSG_ERROR([The Autoperf MPI module is not present])
+      fi
 
       # APMPI only support MPI v3 or higher
       AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
@@ -336,11 +341,16 @@ if test "x$enable_darshan_runtime" = xyes ; then
       abssrcdir=$(readlink -f ${srcdir})
       AC_CHECK_HEADER([papi.h],
                       [with_papi=-lpapi],
-                      [AC_MSG_ERROR([Cannot find papi header required for Autoperf XC module])],
+                      [AC_MSG_ERROR([Cannot find papi header required for Autoperf XC module CFLAGS=$CFLAGS CPPFLAGS=$CPPFLAGS])],
                       [])
+      ac_cv_file_APXC_LOG_FORMAT_H=0
       AC_CHECK_FILE([${abssrcdir}/../modules/autoperf/apxc/darshan-apxc-log-format.h],
-                    [],
-                    [AC_MSG_ERROR([The Autoperf XC git submodule is not present])])
+                    [ac_cv_file_APXC_LOG_FORMAT_H=1])
+      AC_CHECK_FILE([${abssrcdir}/modules/autoperf/apxc/darshan-apxc-log-format.h],
+                    [ac_cv_file_APXC_LOG_FORMAT_H=1])
+      if test "x$ac_cv_file_APXC_LOG_FORMAT_H" = x0 ; then
+         AC_MSG_ERROR([The Autoperf XC git submodule is not present])
+      fi
    fi
 
    # inform about HDF5 installs not found in default locations
