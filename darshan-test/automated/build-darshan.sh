@@ -28,7 +28,10 @@ if [ ! -v DARSHAN_RUNTIME_SKIP ]; then
         DARSHAN_RUNTIME_CONFIG_ARGS="--with-jobid-env=NONE --enable-apmpi-mod"
     fi
     $darshan_root_dir/darshan-runtime/configure $DARSHAN_RUNTIME_CONFIG_ARGS --with-log-path=$DARSHAN_LOG_PATH --prefix=$DARSHAN_INSTALL_PREFIX
-    make install
+    make -j8 install
+
+    # run check
+    make check
 fi
 
 # configure and build darshan-util
@@ -37,4 +40,8 @@ if [ -z "${DARSHAN_UTIL_CONFIG_ARGS}" ]; then
     DARSHAN_UTIL_CONFIG_ARGS="--enable-apmpi-mod --enable-apxc-mod"
 fi
 $darshan_root_dir/darshan-util/configure $DARSHAN_UTIL_CONFIG_ARGS --prefix=$DARSHAN_INSTALL_PREFIX
-make install
+make -j8 install
+
+# run check
+make check
+
