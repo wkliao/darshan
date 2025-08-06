@@ -29,9 +29,6 @@ if [ ! -v DARSHAN_RUNTIME_SKIP ]; then
     fi
     $darshan_root_dir/darshan-runtime/configure $DARSHAN_RUNTIME_CONFIG_ARGS --with-log-path=$DARSHAN_LOG_PATH --prefix=$DARSHAN_INSTALL_PREFIX
     make -j8 install
-
-    # run check
-    make check
 fi
 
 # configure and build darshan-util
@@ -45,3 +42,12 @@ make -j8 install
 # run check
 make check
 
+if [ ! -v DARSHAN_RUNTIME_SKIP ]; then
+    cd $build_dir/darshan-runtime
+    # run check
+    make check
+
+    #dump log files
+    cat test/test-suite.log
+    cat test/tst_runs.log
+fi
