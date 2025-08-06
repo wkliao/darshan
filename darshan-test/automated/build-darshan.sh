@@ -32,6 +32,11 @@ if [ ! -v DARSHAN_RUNTIME_SKIP ]; then
 
     # run check
     make check
+
+#dump log files
+cat test/test-suite.log
+cat test/tst_runs.log
+
 fi
 
 # configure and build darshan-util
