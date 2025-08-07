@@ -815,7 +815,15 @@ if test "x$enable_darshan_runtime" = xyes ; then
          AC_PATH_PROGS(mpicc_path, ${CC})
          ac_mpi_path=`AS_DIRNAME(["$mpicc_path"])`
       fi
+
       AC_PATH_PROGS(TESTMPIRUN, mpiexec mpirun, [], [$ac_mpi_path])
+
+      # check if CC is OpenMPI
+      AC_CHECK_DECL([OMPI_MAJOR_VERSION], [], [], [#include <mpi.h>])
+      if test "x$ac_cv_have_decl_OMPI_MAJOR_VERSION" = xyes ; then
+         TESTMPIRUN="$TESTMPIRUN --oversubscribe"
+      fi
+
       AC_SUBST(TESTMPIRUN)
    else
       have_mpi_io_large_count_apis=no
