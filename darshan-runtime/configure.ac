@@ -820,7 +820,16 @@ if test "x$enable_darshan_runtime" = xyes ; then
 
       # check if CC is OpenMPI
       AC_CHECK_DECL([OMPI_MAJOR_VERSION], [], [], [#include <mpi.h>])
+
       if test "x$ac_cv_have_decl_OMPI_MAJOR_VERSION" = xyes ; then
+AC_MSG_WARN(OMPI_MAJOR_VERSION $OMPI_MAJOR_VERSION)
+AC_COMPUTE_INT([OMPI_MAJOR], [OMPI_MAJOR_VERSION], [[#include <mpi.h>]])
+AC_MSG_WARN(OMPI_MAJOR $OMPI_MAJOR)
+AC_COMPUTE_INT([OMPI_MINOR], [OMPI_MINOR_VERSION], [[#include <mpi.h>]])
+AC_MSG_WARN(OMPI_MINOR $OMPI_MINOR)
+AC_COMPUTE_INT([OMPI_RELEASE], [OMPI_RELEASE_VERSION], [[#include <mpi.h>]])
+AC_MSG_WARN(OMPI_RELEASE $OMPI_RELEASE)
+
          TESTMPIRUN="$TESTMPIRUN --oversubscribe"
       fi
 
