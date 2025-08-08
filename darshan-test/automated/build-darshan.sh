@@ -4,7 +4,7 @@
 #
 
 # Exit immediately if a command exits with a non-zero status.
-set -e
+# set -e
 
 basedir=$PWD
 build_dir=$PWD/darshan_build
@@ -51,10 +51,10 @@ if [ ! -v DARSHAN_RUNTIME_SKIP ]; then
     cd $build_dir/darshan-runtime
 
     # disable errexit, so we can dump make check log file
-    unset +e
+    # unset +e
 
     # run check
-    make check
+    make V=1 check
 
     check_status=$?
 

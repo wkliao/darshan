@@ -226,7 +226,17 @@ done
 
 echo "OPTS=$OPTS"
 
-export LD_PRELOAD=../lib/.libs/libdarshan.so
+export LD_PRELOAD=${prefix}/lib/libdarshan.so
+echo "LD_PRELOAD=$LD_PRELOAD"
+
+${prefix}/bin/darshan-config --all
+
+if test "x$LD_LIBRARY_PATH" = x ; then
+   export LD_LIBRARY_PATH="${ZLIB_HOME}/lib"
+else
+   export LD_LIBRARY_PATH="${ZLIB_HOME}/lib:${LD_LIBRARY_PATH}"
+fi
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 
 for exe in ${check_PROGRAMS} ; do
 
@@ -234,6 +244,9 @@ for exe in ${check_PROGRAMS} ; do
 
       DARSHAN_LOG_FILE="${TST_DARSHAN_LOG_PATH}/${USERNAME_ENV}_${exe}*"
       echo "DARSHAN_LOG_FILE=$DARSHAN_LOG_FILE"
+
+      echo "ls -lt ${TST_DARSHAN_LOG_PATH}"
+      ls -lt ${TST_DARSHAN_LOG_PATH}
 
       DARSGAN_FIELD=MPIIO_BYTES_WRITTEN
       for opt in "" ${OPTS} ; do
@@ -245,6 +258,10 @@ for exe in ${check_PROGRAMS} ; do
           # echo "CMD=$CMD"
           rm -f $TEST_FILE $DARSHAN_LOG_FILE
           $CMD
+      echo "ls -lt ${TST_DARSHAN_LOG_PATH}"
+      ls -lt ${TST_DARSHAN_LOG_PATH}
+      echo "ls -lt ${TEST_FILE}"
+      ls -lt ${TEST_FILE}
           EXPECT_NBYTE=`stat -c %s $TEST_FILE`
           nbytes=`$DARSGAN_PARSER ${DARSHAN_LOG_FILE} | grep $DARSGAN_FIELD | cut -f5`
           # echo "EXPECT_NBYTE=$EXPECT_NBYTE nbytes=$nbytes"

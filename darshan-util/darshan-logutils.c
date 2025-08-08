@@ -1707,6 +1707,16 @@ static int darshan_log_libz_read(darshan_fd fd, struct darshan_log_map map,
 
         tmp_out_bytes = z_strmp->total_out;
         ret = inflate(z_strmp, Z_NO_FLUSH);
+
+if(ret == Z_BUF_ERROR) fprintf(stderr, "Error: Z_BUF_ERROR\n");
+else if(ret == Z_MEM_ERROR) fprintf(stderr, "Error: Z_MEM_ERROR\n");
+else if(ret == Z_STREAM_ERROR) fprintf(stderr, "Error: Z_STREAM_ERROR\n");
+else if(ret == Z_NEED_DICT) fprintf(stderr, "Error: Z_NEED_DICT\n");
+else if(ret == Z_ERRNO) fprintf(stderr, "Error: Z_ERRNO\n");
+else if(ret == Z_DATA_ERROR) fprintf(stderr, "Error: Z_DATA_ERROR\n");
+else if(ret == Z_MEM_ERROR) fprintf(stderr, "Error: Z_MEM_ERROR\n");
+else if(ret == Z_VERSION_ERROR) fprintf(stderr, "Error: Z_VERSION_ERROR\n");
+
         if(ret != Z_OK && ret != Z_STREAM_END)
         {
             fprintf(stderr, "Error: unable to inflate darshan log data.\n");
