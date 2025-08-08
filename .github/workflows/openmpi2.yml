@@ -1,0 +1,52 @@
+name: OpenMPI Default
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  end_to_end_regression:
+    strategy:
+      matrix:
+        platform: [ubuntu-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -y
+          # sudo apt-get install -y openmpi-bin openmpi-common libopenmpi-dev
+          sudo apt-get install openmpi-bin openmpi-common libopenmpi-dev libgtk2.0-dev
+      - name: Initialize Darshan
+        run: |
+          git submodule update --init
+          autoreconf -i
+      - name: Install Darshan
+        run: |
+          export DARSHAN_ROOT=$PWD
+          export DARSHAN_LOG_PATH=$PWD/darshan_logs
+          export DARSHAN_INSTALL_PREFIX=$PWD/darshan_install
+          export DARSHAN_BUILD=$PWD/darshan_build
+          mkdir -p $DARSHAN_LOG_PATH $DARSHAN_BUILD
+          cd $DARSHAN_BUILD
+          $DARSHAN_ROOT/configure --prefix=$DARSHAN_INSTALL_PREFIX \
+                                  --silent \
+                                  --with-log-path=$DARSHAN_LOG_PATH \
+                                  --with-jobid-env=NONE \
+                                  CC=mpicc RUNTIME_CC=mpicc UTIL_CC=gcc
+          make -s LIBTOOLFLAGS=--silent V=1 -j8
+          make -s install
+      - name: make check
+        run: |
+          cd darshan_build
+          make check
+
+      - name: Print test log files
+        if: ${{ always() }}
+        run: |
+          cat darshan_build/darshan-runtime/test/tst_runs.log
+

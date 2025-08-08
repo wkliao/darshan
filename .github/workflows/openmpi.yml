@@ -1,0 +1,97 @@
+name: OpenMPI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+   OPENMPI_VERSION: 5.0.2
+
+jobs:
+  end_to_end_regression:
+    strategy:
+      matrix:
+        platform: [ubuntu-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -y
+          # sudo apt-get install -y zlib1g-dev
+          # sudo apt-get install libbz2-dev
+          # sudo apt-get install -y openmpi-bin openmpi-common libopenmpi-dev
+      - name: Build OPENMPI
+        run: |
+          cd ${GITHUB_WORKSPACE}
+          echo "Install OPENMPI ${OPENMPI_VERSION} in ${GITHUB_WORKSPACE}/OPENMPI"
+          rm -rf OPENMPI ; mkdir OPENMPI ; cd OPENMPI
+          VER_MAJOR=${OPENMPI_VERSION%.*}
+          wget -q https://download.open-mpi.org/release/open-mpi/v${VER_MAJOR}/openmpi-${OPENMPI_VERSION}.tar.gz
+          gzip -dc openmpi-${OPENMPI_VERSION}.tar.gz | tar -xf -
+          cd openmpi-${OPENMPI_VERSION}
+          ./configure --prefix=${GITHUB_WORKSPACE}/OPENMPI \
+                      --silent \
+                      --with-io-romio-flags="--with-file-system=ufs" \
+                      CC=gcc \
+                      --disable-mpi-cxx --disable-mpi-fortran
+          make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+          make -s -j 8 distclean >> qout 2>&1
+      - name: Initialize Darshan
+        run: |
+          git submodule update --init
+          autoreconf -i
+      - name: Install Darshan runtime
+        run: |
+          export PATH="${GITHUB_WORKSPACE}/OPENMPI/bin:$PATH"
+          export DARSHAN_ROOT=$PWD
+          export DARSHAN_INSTALL_PREFIX=$PWD/darshan_install
+          export DARSHAN_BUILD=$PWD/darshan_build
+          export DARSHAN_LOG_PATH=$PWD/darshan_logs
+          mkdir -p $DARSHAN_LOG_PATH $DARSHAN_BUILD
+          mkdir -p $DARSHAN_BUILD/runtime
+
+          cd $DARSHAN_BUILD/runtime
+          DARSHAN_RUNTIME_CONFIG_ARGS="--with-log-hints=cb_nodes=1 --with-jobid-env=NONE --enable-apmpi-mod"
+          $DARSHAN_ROOT/darshan-runtime/configure --silent $DARSHAN_RUNTIME_CONFIG_ARGS --with-log-path=$DARSHAN_LOG_PATH --prefix=$DARSHAN_INSTALL_PREFIX
+          make -s LIBTOOLFLAGS=--silent V=1 -j8
+          make -s install
+
+      - name: Install Darshan utility
+        run: |
+          export PATH="${GITHUB_WORKSPACE}/OPENMPI/bin:$PATH"
+          export DARSHAN_ROOT=$PWD
+          export DARSHAN_INSTALL_PREFIX=$PWD/darshan_install
+          export DARSHAN_BUILD=$PWD/darshan_build
+          export DARSHAN_LOG_PATH=$PWD/darshan_logs
+          mkdir -p $DARSHAN_LOG_PATH $DARSHAN_BUILD
+          mkdir -p $DARSHAN_BUILD/util
+
+          cd $DARSHAN_BUILD/util
+          DARSHAN_UTIL_CONFIG_ARGS="--enable-apmpi-mod --enable-apxc-mod"
+          $DARSHAN_ROOT/darshan-util/configure --silent $DARSHAN_UTIL_CONFIG_ARGS --prefix=$DARSHAN_INSTALL_PREFIX
+          make -s LIBTOOLFLAGS=--silent V=1 -j8
+          make -s install
+
+      - name: make check
+        run: |
+          export PATH="${GITHUB_WORKSPACE}/OPENMPI/bin:$PATH"
+          export DARSHAN_BUILD=$PWD/darshan_build
+
+          cd $DARSHAN_BUILD/runtime
+          make check
+
+          cd $DARSHAN_BUILD/util
+          make check
+
+      - name: Print test log files
+        if: ${{ always() }}
+        run: |
+          export PATH="${GITHUB_WORKSPACE}/OPENMPI/bin:$PATH"
+          export DARSHAN_BUILD=$PWD/darshan_build
+          cat $DARSHAN_BUILD/runtime/test/tst_runs.log
+

@@ -1,20 +1,42 @@
 #!/bin/bash
 
 # Exit immediately if a command exits with a non-zero status.
-set -e
+# set -e
 
 TODAY_DATE_PATH=`date "+%Y/%-m/%-d"`
 TST_DARSHAN_LOG_PATH="${TST_DARSHAN_LOG_PATH}/${TODAY_DATE_PATH}"
 mkdir -p ${TST_DARSHAN_LOG_PATH}
 
+echo "df -T ${TST_DARSHAN_LOG_PATH}"
+df -T ${TST_DARSHAN_LOG_PATH}
+
+echo "findmnt -n -o FSTYPE --target ${TST_DARSHAN_LOG_PATH}"
+findmnt -n -o FSTYPE --target ${TST_DARSHAN_LOG_PATH}
+
 if test "x$USERNAME_ENV" = xno ; then
    USERNAME_ENV=$USER
 fi
 
-DARSGAN_PARSER=../../darshan-util/darshan-parser
+echo "PATH=$PATH"
+echo ""
+echo "prefix=$prefix"
+echo ""
+
+DARSGAN_PARSER=${prefix}/bin/darshan-parser
+echo "DARSGAN_PARSER=$DARSGAN_PARSER"
+echo ""
+
+ls -l /home/runner/work/darshan/darshan/darshan_install/bin
+ls -l /home/runner/work/darshan/darshan/darshan_install/bin/darshan-parser
 
 # run NP number of MPI processes
+# Note when using OpenMPI, NP > 2 will fail
 NP=4
+
+# OMP_HOSTFILE=./omp_hostfile
+# rm -f $OMP_HOSTFILE
+# echo "localhost slots=$NP" > $OMP_HOSTFILE
+# TESTMPIRUN="$TESTMPIRUN --hostfile $OMP_HOSTFILE"
 
 TEST_FILE=./testfile.dat
 
@@ -226,15 +248,15 @@ done
 
 echo "OPTS=$OPTS"
 
-export LD_PRELOAD=${prefix}/lib/libdarshan.so
+export LD_PRELOAD="${prefix}/lib/libdarshan.so:${prefix}/lib/libdarshan-util.so"
 echo "LD_PRELOAD=$LD_PRELOAD"
 
 ${prefix}/bin/darshan-config --all
 
 if test "x$LD_LIBRARY_PATH" = x ; then
-   export LD_LIBRARY_PATH="${ZLIB_HOME}/lib"
+   export LD_LIBRARY_PATH="${prefix}/lib"
 else
-   export LD_LIBRARY_PATH="${ZLIB_HOME}/lib:${LD_LIBRARY_PATH}"
+   export LD_LIBRARY_PATH="${prefix}/lib:${LD_LIBRARY_PATH}"
 fi
 echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 
@@ -255,7 +277,7 @@ for exe in ${check_PROGRAMS} ; do
           else
              CMD="${TESTMPIRUN} -n ${NP} ./$exe -$opt $TEST_FILE"
           fi
-          # echo "CMD=$CMD"
+          echo "CMD=$CMD"
           rm -f $TEST_FILE $DARSHAN_LOG_FILE
           $CMD
       echo "ls -lt ${TST_DARSHAN_LOG_PATH}"
@@ -263,7 +285,11 @@ for exe in ${check_PROGRAMS} ; do
       echo "ls -lt ${TEST_FILE}"
       ls -lt ${TEST_FILE}
           EXPECT_NBYTE=`stat -c %s $TEST_FILE`
+echo "EXPECT_NBYTE=$EXPECT_NBYTE"
+echo "DARSGAN_PARSER=$DARSGAN_PARSER"
+# $DARSGAN_PARSER ${DARSHAN_LOG_FILE}
           nbytes=`$DARSGAN_PARSER ${DARSHAN_LOG_FILE} | grep $DARSGAN_FIELD | cut -f5`
+echo "nbytes=$nbytes"
           # echo "EXPECT_NBYTE=$EXPECT_NBYTE nbytes=$nbytes"
           if test "x$nbytes" != "x$EXPECT_NBYTE" ; then
              echo "Error: CMD=$CMD nbytes=$nbytes"
@@ -292,3 +318,4 @@ for exe in ${check_PROGRAMS} ; do
    fi
 done
 
+# rm -f $OMP_HOSTFILE
