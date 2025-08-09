@@ -14,7 +14,8 @@ fi
 DARSGAN_PARSER=../../darshan-util/darshan-parser
 
 # run NP number of MPI processes
-NP=4
+# Note when using OpenMPI, setting NP > 2 will fail.
+NP=2
 
 TEST_FILE=./testfile.dat
 
