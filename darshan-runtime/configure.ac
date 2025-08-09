@@ -651,6 +651,7 @@ if test "x$enable_darshan_runtime" = xyes ; then
      )
    ])
 
+   rdtscp_num=
    AC_ARG_ENABLE(rdtscp,
    [  --enable-rdtscp=<num>   Use RDTSCP intrinsic for timing, with specified base frequency],
        [
@@ -662,6 +663,8 @@ if test "x$enable_darshan_runtime" = xyes ; then
        fi
        if test x$HAVE_RDTSCP != x1; then
            AC_MSG_ERROR(attempted to enable rdtscp timer, but it is not supported on this platform)
+       else
+           rdtscp_num=${enableval}
        fi
        ],
        []
@@ -767,6 +770,72 @@ if test "x$enable_darshan_runtime" = xyes ; then
                    [AC_MSG_RESULT(yes)], [AC_MSG_RESULT(no)])],
             [AC_MSG_RESULT(no)]
       )
+
+      dnl MPI_Count was first introduced in MPI 3.0. Check MPI-IOfunctions that make
+      dnl use of MPI_Count.
+      AC_CHECK_FUNCS([MPI_File_read_c \
+                      MPI_File_read_all_c \
+                      MPI_File_read_all_begin_c \
+                      MPI_File_read_at_c \
+                      MPI_File_read_at_all_c \
+                      MPI_File_read_at_all_begin_c \
+                      MPI_File_read_ordered_c \
+                      MPI_File_read_ordered_begin_c \
+                      MPI_File_read_shared_c \
+                      MPI_File_write_c \
+                      MPI_File_write_all_c \
+                      MPI_File_write_all_begin_c \
+                      MPI_File_write_at_c \
+                      MPI_File_write_at_all_c \
+                      MPI_File_write_at_all_begin_c \
+                      MPI_File_write_ordered_c \
+                      MPI_File_write_ordered_begin_c \
+                      MPI_File_write_shared_c \
+                      MPI_File_iread_c \
+                      MPI_File_iread_all_c \
+                      MPI_File_iread_at_c \
+                      MPI_File_iread_at_all_c \
+                      MPI_File_iread_shared_c \
+                      MPI_File_iwrite_c \
+                      MPI_File_iwrite_all_c \
+                      MPI_File_iwrite_at_c \
+                      MPI_File_iwrite_at_all_c \
+                      MPI_File_iwrite_shared_c],
+                     [have_mpi_io_large_count_apis=yes],
+                     [have_mpi_io_large_count_apis=no])
+
+      if test "x$have_mpi_io_large_count_apis" = "xyes" ; then
+         AC_DEFINE(HAVE_MPI_LARGE_COUNT, 1,
+                   [Define if MPI-IO support large count feature])
+         AC_SUBST(HAVE_MPI_LARGE_COUNT, [1])
+      fi
+
+      ac_mpi_path=`AS_DIRNAME(["$CC"])`
+      if test "x$ac_mpi_path" = "x." ; then
+         AC_PATH_PROGS(mpicc_path, ${CC})
+         ac_mpi_path=`AS_DIRNAME(["$mpicc_path"])`
+      fi
+
+      AC_PATH_PROGS(TESTMPIRUN, mpiexec mpirun, [], [$ac_mpi_path])
+
+      # check if CC is OpenMPI
+      AC_CHECK_DECL([OMPI_MAJOR_VERSION], [], [], [#include <mpi.h>])
+
+      if test "x$ac_cv_have_decl_OMPI_MAJOR_VERSION" = xyes ; then
+AC_MSG_WARN(OMPI_MAJOR_VERSION $OMPI_MAJOR_VERSION)
+AC_COMPUTE_INT([OMPI_MAJOR], [OMPI_MAJOR_VERSION], [[#include <mpi.h>]])
+AC_MSG_WARN(OMPI_MAJOR $OMPI_MAJOR)
+AC_COMPUTE_INT([OMPI_MINOR], [OMPI_MINOR_VERSION], [[#include <mpi.h>]])
+AC_MSG_WARN(OMPI_MINOR $OMPI_MINOR)
+AC_COMPUTE_INT([OMPI_RELEASE], [OMPI_RELEASE_VERSION], [[#include <mpi.h>]])
+AC_MSG_WARN(OMPI_RELEASE $OMPI_RELEASE)
+
+         TESTMPIRUN="$TESTMPIRUN --oversubscribe"
+      fi
+
+      AC_SUBST(TESTMPIRUN)
+   else
+      have_mpi_io_large_count_apis=no
    fi
 
    #
@@ -830,8 +899,42 @@ else
    enable_ldms_mod=no
    with_log_path=
    with_jobid_env=
+   have_mpi_io_large_count_apis=no
 fi
 
+AC_SUBST(ENABLE_LD_PRELOAD, ["$enable_ld_preload"])
+AC_SUBST(ENABLE_CUSERID, ["$enable_cuserid"])
+AC_SUBST(ENABLE_GROUP_READABLE_LOGS, ["$enable_group_readable_logs"])
+AC_SUBST(ENABLE_MMAP_LOGS, ["$enable_mmap_logs"])
+AC_SUBST(ENABLE_NULL_MOD, ["$enable_null_mod"])
+AC_SUBST(ENABLE_POSIX_MOD, ["$enable_posix_mod"])
+AC_SUBST(ENABLE_STDIO_MOD, ["$enable_stdio_mod"])
+AC_SUBST(ENABLE_DXT_MOD, ["$enable_dxt_mod"])
+AC_SUBST(ENABLE_HEATMAP_MOD, ["$enable_heatmap_mod"])
+AC_SUBST(ENABLE_MPIIO_MOD, ["$enable_mpiio_mod"])
+AC_SUBST(ENABLE_APMPI_MOD, ["$enable_apmpi_mod"])
+AC_SUBST(ENABLE_APMPI_COLL_SYNC, ["$enable_apmpi_coll_sync"])
+AC_SUBST(ENABLE_APXC_MOD, ["$enable_apxc_mod"])
+AC_SUBST(ENABLE_HDF5_MOD, ["$enable_hdf5_mod"])
+AC_SUBST(ENABLE_PNETCDF_MOD, ["$enable_pnetcdf_mod"])
+AC_SUBST(ENABLE_DAOS_MOD, ["$enable_daos_mod"])
+AC_SUBST(ENABLE_BGQ_MOD, ["$enable_bgq_mod"])
+AC_SUBST(ENABLE_LUSTRE_MOD, ["$enable_lustre_mod"])
+AC_SUBST(ENABLE_MDHIM_MOD, ["$enable_mdhim_mod"])
+AC_SUBST(ENABLE_LDMS_MOD, ["$enable_ldms_mod"])
+AC_SUBST(ENABLE_RDTSCP_NUM, ["$rdtscp_num"])
+AC_SUBST(ENABLE_EXIT_WRAPPER, ["$enable_exit_wrapper"])
+AC_SUBST(ZLIB_HOME, ["$ZLIB_HOME"])
+AC_SUBST(MEM_ALIGN, ["$with_mem_align"])
+AC_SUBST(DARSHAN_LOG_HINTS, ["$__DARSHAN_LOG_HINTS"])
+AC_SUBST(JOBID_ENV, ["$with_jobid_env"])
+AC_SUBST(USERNAME_ENV, ["$with_username_env"])
+AC_SUBST(MOD_MEM, ["$with_mod_mem"])
+AC_SUBST(NAME_MEM, ["$with_name_mem"])
+AC_SUBST(HDF5_PATH, ["$with_hdf5"])
+AC_SUBST(PNETCDF_PATH, ["$with_pnetcdf"])
+AC_SUBST(DAOS_PATH, ["$with_daos"])
+AC_SUBST(LDMS_PATH, ["$LDMS_HOME"])
 
 AM_CONDITIONAL(ENABLE_MMAP_LOGS,    [test "x$enable_mmap_logs"   = xyes])
 AM_CONDITIONAL(ENABLE_LDPRELOAD,    [test "x$enable_ld_preload"  = xyes])
@@ -859,6 +962,7 @@ AC_CONFIG_FILES(Makefile \
                 darshan-gen-cxx.pl \
                 darshan-gen-fortran.pl \
                 lib/Makefile \
+                test/Makefile \
                 pkgconfig/Makefile \
                 pkgconfig/darshan-runtime.pc \
                 share/Makefile \
@@ -936,5 +1040,6 @@ if test "x$enable_darshan_runtime" = xyes ; then
            Log file env variables        - $__log_path_by_env
            Location of Darshan log files - $__log_path
            Job ID env variable           - $with_jobid_env
-           MPI-IO hints                  - $__DARSHAN_LOG_HINTS"
+           MPI-IO hints                  - $__DARSHAN_LOG_HINTS
+           MPI-IO large-count support    - $have_mpi_io_large_count_apis"
 fi
