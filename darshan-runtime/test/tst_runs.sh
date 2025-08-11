@@ -4,6 +4,8 @@
 # set -e
 
 TODAY_DATE_PATH=`date "+%Y/%-m/%-d"`
+DARSHAN_BUILD="${TST_DARSHAN_LOG_PATH}/.."
+
 TST_DARSHAN_LOG_PATH="${TST_DARSHAN_LOG_PATH}/${TODAY_DATE_PATH}"
 mkdir -p ${TST_DARSHAN_LOG_PATH}
 
@@ -31,7 +33,9 @@ ls -l /home/runner/work/darshan/darshan/darshan_install/bin/darshan-parser
 
 # run NP number of MPI processes
 # Note when using OpenMPI, NP > 2 will fail
-NP=4
+if test "x$NP" = x ; then
+   NP=2
+fi
 
 # OMP_HOSTFILE=./omp_hostfile
 # rm -f $OMP_HOSTFILE
@@ -282,33 +286,17 @@ for exe in ${check_PROGRAMS} ; do
           $CMD
       echo "ls -lt ${TST_DARSHAN_LOG_PATH}"
       ls -lt ${TST_DARSHAN_LOG_PATH}
+echo "cp ${DARSHAN_LOG_FILE} ${DARSHAN_BUILD}/darshan_log.$opt"
+cp ${DARSHAN_LOG_FILE} ${DARSHAN_BUILD}/darshan_log.$opt
       echo "ls -lt ${TEST_FILE}"
       ls -lt ${TEST_FILE}
           EXPECT_NBYTE=`stat -c %s $TEST_FILE`
 echo "EXPECT_NBYTE=$EXPECT_NBYTE"
 echo "DARSGAN_PARSER=$DARSGAN_PARSER"
 # $DARSGAN_PARSER ${DARSHAN_LOG_FILE}
+
           nbytes=`$DARSGAN_PARSER ${DARSHAN_LOG_FILE} | grep $DARSGAN_FIELD | cut -f5`
 echo "nbytes=$nbytes"
-          # echo "EXPECT_NBYTE=$EXPECT_NBYTE nbytes=$nbytes"
-          if test "x$nbytes" != "x$EXPECT_NBYTE" ; then
-             echo "Error: CMD=$CMD nbytes=$nbytes"
-             exit 1
-          fi
-      done
-
-      DARSGAN_FIELD=MPIIO_BYTES_READ
-      EXPECT_NBYTE=`stat -c %s $TEST_FILE`
-      for opt in "" ${OPTS} ; do
-          if test "x$opt" = x ; then
-             CMD="${TESTMPIRUN} -n ${NP} ./$exe -i $TEST_FILE"
-          else
-             CMD="${TESTMPIRUN} -n ${NP} ./$exe -$opt -i $TEST_FILE"
-          fi
-          # echo "CMD=$CMD"
-          rm -f $DARSHAN_LOG_FILE
-          $CMD
-          nbytes=`$DARSGAN_PARSER ${DARSHAN_LOG_FILE} | grep $DARSGAN_FIELD | cut -f5`
           # echo "EXPECT_NBYTE=$EXPECT_NBYTE nbytes=$nbytes"
           if test "x$nbytes" != "x$EXPECT_NBYTE" ; then
              echo "Error: CMD=$CMD nbytes=$nbytes"

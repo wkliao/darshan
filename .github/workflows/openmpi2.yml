@@ -46,6 +46,12 @@ jobs:
           cd darshan_build
           make check
 
+      - name: Archive Darshan log files
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs
+          path: darshan_log.*
+
       - name: Print test log files
         if: ${{ always() }}
         run: |
