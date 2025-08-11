@@ -44,9 +44,10 @@ jobs:
       - name: make check
         run: |
           cd darshan_build
-          make check
+          make check NP=4
 
       - name: Archive Darshan log files
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: logs
