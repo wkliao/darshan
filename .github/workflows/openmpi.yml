@@ -56,7 +56,7 @@ jobs:
           mkdir -p $DARSHAN_BUILD/runtime
 
           cd $DARSHAN_BUILD/runtime
-          DARSHAN_RUNTIME_CONFIG_ARGS="--with-log-hints=cb_nodes=1 --with-jobid-env=NONE --enable-apmpi-mod"
+          DARSHAN_RUNTIME_CONFIG_ARGS="--with-log-hints=cb_nodes=4 --with-jobid-env=NONE --enable-apmpi-mod"
           $DARSHAN_ROOT/darshan-runtime/configure --silent $DARSHAN_RUNTIME_CONFIG_ARGS --with-log-path=$DARSHAN_LOG_PATH --prefix=$DARSHAN_INSTALL_PREFIX
           make -s LIBTOOLFLAGS=--silent V=1 -j8
           make -s install
