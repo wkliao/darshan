@@ -35,6 +35,7 @@ jobs:
           cd $DARSHAN_BUILD
           $DARSHAN_ROOT/configure --prefix=$DARSHAN_INSTALL_PREFIX \
                                   --silent \
+                                  --with-log-hints=cb_nodes=1 \
                                   --with-log-path=$DARSHAN_LOG_PATH \
                                   --with-jobid-env=NONE \
                                   CC=mpicc RUNTIME_CC=mpicc UTIL_CC=gcc
