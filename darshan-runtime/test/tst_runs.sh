@@ -11,7 +11,7 @@ if test "x$USERNAME_ENV" = xno ; then
    USERNAME_ENV=$USER
 fi
 
-DARSGAN_PARSER=../../darshan-util/darshan-parser
+DARSHAN_PARSER=../../darshan-util/darshan-parser
 
 # run NP number of MPI processes
 # Note when using OpenMPI, setting NP > 2 will fail.
@@ -22,7 +22,7 @@ TEST_FILE=./testfile.dat
 # tst_mpi_io.c takes the following command-line options.
 #        [-i] test read API
 #        [-c] test collective API
-#        [-a] test asynchonous API
+#        [-a] test asynchronous API
 #        [-s] test shared API
 #        [-p] test split API
 #        [-o] test ordered API
@@ -247,7 +247,7 @@ for exe in ${check_PROGRAMS} ; do
           rm -f $TEST_FILE $DARSHAN_LOG_FILE
           $CMD
           EXPECT_NBYTE=`stat -c %s $TEST_FILE`
-          nbytes=`$DARSGAN_PARSER ${DARSHAN_LOG_FILE} | grep $DARSGAN_FIELD | cut -f5`
+          nbytes=`$DARSHAN_PARSER ${DARSHAN_LOG_FILE} | grep $DARSGAN_FIELD | cut -f5`
           # echo "EXPECT_NBYTE=$EXPECT_NBYTE nbytes=$nbytes"
           if test "x$nbytes" != "x$EXPECT_NBYTE" ; then
              echo "Error: CMD=$CMD nbytes=$nbytes"
@@ -266,7 +266,7 @@ for exe in ${check_PROGRAMS} ; do
           # echo "CMD=$CMD"
           rm -f $DARSHAN_LOG_FILE
           $CMD
-          nbytes=`$DARSGAN_PARSER ${DARSHAN_LOG_FILE} | grep $DARSGAN_FIELD | cut -f5`
+          nbytes=`$DARSHAN_PARSER ${DARSHAN_LOG_FILE} | grep $DARSGAN_FIELD | cut -f5`
           # echo "EXPECT_NBYTE=$EXPECT_NBYTE nbytes=$nbytes"
           if test "x$nbytes" != "x$EXPECT_NBYTE" ; then
              echo "Error: CMD=$CMD nbytes=$nbytes"
