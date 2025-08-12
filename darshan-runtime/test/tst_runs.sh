@@ -42,6 +42,9 @@ fi
 # echo "localhost slots=$NP" > $OMP_HOSTFILE
 # TESTMPIRUN="$TESTMPIRUN --hostfile $OMP_HOSTFILE"
 
+TESTMPIRUN="$TESTMPIRUN --mca io io_ompio_num_aggregators=4"
+export DARSHAN_LOGHINTS=""
+
 TEST_FILE=./testfile.dat
 
 # tst_mpi_io.c takes the following command-line options.
