@@ -36,6 +36,7 @@ ls -l /home/runner/work/darshan/darshan/darshan_install/bin/darshan-parser
 if test "x$NP" = x ; then
    NP=2
 fi
+NP=4
 
 # OMP_HOSTFILE=./omp_hostfile
 # rm -f $OMP_HOSTFILE
@@ -46,9 +47,10 @@ echo "TESTMPIRUN=$TESTMPIRUN"
 echo "$TESTMPIRUN -V"
 $TESTMPIRUN -V
 
+# OpenMPI 5.x.x
 IS_OPENMPI=`$TESTMPIRUN -V | grep "Open MPI"`
 if test "x$IS_OPENMPI" = x ; then
-   # OpenMPI may be an older version, try again
+   # OpenMPI may be an older version, i.e. 4.x.x
    IS_OPENMPI=`$TESTMPIRUN -V | grep "OpenRTE"`
 fi
 echo "IS_OPENMPI=$IS_OPENMPI"
@@ -57,8 +59,9 @@ echo "IS_OPENMPI=$IS_OPENMPI"
 # echo "OMPI_VER=$OMPI_VER"
 
 if test "x$IS_OPENMPI" != x ; then
-   MCA_HINT="--mca io_ompio_num_aggregators=4"
-   TESTMPIRUN="$TESTMPIRUN $MCA_HINT --oversubscribe"
+   # MCA_HINT="--mca io_ompio_num_aggregators=4"
+   # TESTMPIRUN="$TESTMPIRUN $MCA_HINT --oversubscribe"
+   TESTMPIRUN="$TESTMPIRUN --oversubscribe"
 fi
 # export DARSHAN_LOGHINTS=""
 
