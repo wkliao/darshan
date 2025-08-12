@@ -42,8 +42,20 @@ fi
 # echo "localhost slots=$NP" > $OMP_HOSTFILE
 # TESTMPIRUN="$TESTMPIRUN --hostfile $OMP_HOSTFILE"
 
-TESTMPIRUN="$TESTMPIRUN --mca io io_ompio_num_aggregators=4"
-export DARSHAN_LOGHINTS=""
+echo "TESTMPIRUN=$TESTMPIRUN"
+echo "$TESTMPIRUN -V"
+$TESTMPIRUN -V
+
+IS_OPENMPI=`$TESTMPIRUN -V | grep "Open MPI"`
+echo "IS_OPENMPI=$IS_OPENMPI"
+MPI_VER=`$TESTMPIRUN --version | grep "Open MPI" | cut -d" " -f4`
+echo "OMPI_VER=$OMPI_VER"
+
+if test "x$IS_OPENMPI" != x ; then
+   MCA_HINT="--mca io io_ompio_num_aggregators=4"
+   TESTMPIRUN="$TESTMPIRUN $MCA_HINT --oversubscribe"
+fi
+# export DARSHAN_LOGHINTS=""
 
 TEST_FILE=./testfile.dat
 
