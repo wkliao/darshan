@@ -1688,8 +1688,9 @@ static int darshan_log_open(char *logfile_name, struct darshan_core_runtime *cor
         }
 
         /* open the darshan log file for writing using MPI */
-        ret = MPI_File_open(core->mpi_comm, logfile_name,
+        ret = PMPI_File_open(core->mpi_comm, logfile_name,
             MPI_MODE_CREATE | MPI_MODE_WRONLY | MPI_MODE_EXCL, info, &log_fh->mpi_fh);
+printf("%d: %s at %d ---- PMPI_File_open %s (%s)\n",my_rank,__func__,__LINE__,logfile_name,(ret==MPI_SUCCESS)?"MPI_SUCCESS":"FAILED");
         MPI_Info_free(&info);
         if(ret != MPI_SUCCESS)
             return(-1);
@@ -1740,6 +1741,7 @@ static int darshan_log_write_job_record(darshan_core_log_fh log_fh,
         {
             ret = PMPI_File_write_at(log_fh.mpi_fh, *inout_off, core->comp_buf,
                 comp_buf_sz, MPI_BYTE, &status);
+printf("%d: %s at %d ---- PMPI_File_write_at off=%lld size=%d (%s)\n",my_rank,__func__,__LINE__, *inout_off,comp_buf_sz,(ret==MPI_SUCCESS)?"MPI_SUCCESS":"FAILED");
             if(ret != MPI_SUCCESS)
             {
                 DARSHAN_WARN("error writing job record");
@@ -1909,6 +1911,7 @@ static int darshan_log_write_header(darshan_core_log_fh log_fh,
         /* write the header using MPI */
         ret = PMPI_File_write_at(log_fh.mpi_fh, 0, core->log_hdr_p,
             sizeof(struct darshan_header), MPI_BYTE, &status);
+printf("%d: %s at %d ---- PMPI_File_write_at off=%lld size=%zd (%s)\n",my_rank,__func__,__LINE__, 0, sizeof(struct darshan_header),(ret==MPI_SUCCESS)?"MPI_SUCCESS":"FAILED");
         if(ret != MPI_SUCCESS)
         {
             DARSHAN_WARN("error writing darshan log header");
@@ -1975,6 +1978,7 @@ static int darshan_log_append(darshan_core_log_fh log_fh, struct darshan_core_ru
             /* no compression errors, proceed with the collective write */
             ret = PMPI_File_write_at_all(log_fh.mpi_fh, my_off,
                 core->comp_buf, comp_buf_sz, MPI_BYTE, &status);
+printf("%d: %s at %d ---- PMPI_File_write_at_all off=%lld  size=%d (%s)\n",my_rank,__func__,__LINE__, my_off, comp_buf_sz,(ret==MPI_SUCCESS)?"MPI_SUCCESS":"FAILED");
             if(ret != MPI_SUCCESS)
                 ret = -1;
         }
@@ -1985,6 +1989,7 @@ static int darshan_log_append(darshan_core_log_fh log_fh, struct darshan_core_ru
              */
             (void)PMPI_File_write_at_all(log_fh.mpi_fh, my_off,
                 core->comp_buf, comp_buf_sz, MPI_BYTE, &status);
+printf("%d: %s at %d ---- PMPI_File_write_at_all off=%lld  size=%d (FAILED)\n",my_rank,__func__,__LINE__, my_off, comp_buf_sz);
         }
 
         if(nprocs > 1)
