@@ -25,6 +25,15 @@ else
 fi
 echo "DARSHAN_PARSER=$DARSHAN_PARSER"
 
+if test -f $DARSHAN_INSTALL_DIR/bin/darshan-config ; then
+   DARSHAN_CONFIG=$DARSHAN_INSTALL_DIR/bin/darshan-config
+else
+   DARSHAN_CONFIG=../../darshan-util/darshan-config
+fi
+echo "DARSHAN_CONFIG=$DARSHAN_CONFIG"
+
+$DARSHAN_CONFIG --all
+
 # run NP number of MPI processes
 # Note when using OpenMPI, setting NP > 2 will fail.
 if test "x$NP" = x ; then
@@ -265,6 +274,9 @@ for exe in ${check_PROGRAMS} ; do
           echo "CMD=$CMD"
           rm -f $TEST_FILE $DARSHAN_LOG_FILE
           $CMD
+
+          echo "ls -l ${DARSHAN_LOG_FILE}"
+          ls -l ${DARSHAN_LOG_FILE}
 
           echo "parsing ${DARSHAN_LOG_FILE}"
           EXPECT_NBYTE=`stat -c %s $TEST_FILE`
