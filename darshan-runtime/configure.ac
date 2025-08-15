@@ -598,7 +598,7 @@ if test "x$enable_darshan_runtime" = xyes ; then
       AC_MSG_ERROR(must provide --with-jobid-env=<name> argument to configure.)
    fi
 
-   __DARSHAN_LOG_HINTS_DEFAULT="romio_no_indep_rw=true;cb_nodes=4"
+   __DARSHAN_LOG_HINTS_DEFAULT="romio_no_indep_rw=true;cb_nodes=4;romio_ds_write=disable"
    if test "x$GOT_LOG_HINTS" != xyes ; then
       dnl use default hints
       AC_DEFINE_UNQUOTED([__DARSHAN_LOG_HINTS], "$__DARSHAN_LOG_HINTS_DEFAULT",

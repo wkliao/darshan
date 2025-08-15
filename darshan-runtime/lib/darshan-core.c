@@ -1701,7 +1701,6 @@ static int darshan_log_write_job_record(darshan_core_log_fh log_fh,
     int ret;
 
 #ifdef HAVE_MPI
-    if (using_mpi) PMPI_Barrier(core->mpi_comm);
     /* only rank 0 writes the job record */
     if (using_mpi && my_rank > 0)
         return(0);
@@ -1889,14 +1888,13 @@ static int darshan_log_write_header(darshan_core_log_fh log_fh,
             PMPI_Reduce(
                 &(core->log_hdr_p->mod_ver), &(core->log_hdr_p->mod_ver),
                 DARSHAN_KNOWN_MODULE_COUNT, MPI_UINT32_T, MPI_MAX, 0, core->mpi_comm);
-            // return(0); /* only rank 0 writes the header */
+            return(0); /* only rank 0 writes the header */
         }
 
-int wlen = (my_rank == 0) ? sizeof(struct darshan_header) : 0;
         /* write the header using MPI */
         ret = PMPI_File_write_at(log_fh.mpi_fh, 0, core->log_hdr_p,
-            wlen, MPI_BYTE, &status);
-printf("%d: %s at %d ---- PMPI_File_write_at off=%d size=%zd (%s)\n",my_rank,__func__,__LINE__, 0, wlen,(ret==MPI_SUCCESS)?"MPI_SUCCESS":"FAILED");
+            sizeof(struct darshan_header), MPI_BYTE, &status);
+printf("%d: %s at %d ---- PMPI_File_write_at off=%d size=%zd (%s)\n",my_rank,__func__,__LINE__, 0, sizeof(struct darshan_header),(ret==MPI_SUCCESS)?"MPI_SUCCESS":"FAILED");
         if(ret != MPI_SUCCESS)
         {
             DARSHAN_WARN("error writing darshan log header");
@@ -1961,9 +1959,9 @@ static int darshan_log_append(darshan_core_log_fh log_fh, struct darshan_core_ru
         if(ret == 0)
         {
             /* no compression errors, proceed with the collective write */
-            ret = PMPI_File_write_at(log_fh.mpi_fh, my_off,
+            ret = PMPI_File_write_at_all(log_fh.mpi_fh, my_off,
                 core->comp_buf, comp_buf_sz, MPI_BYTE, &status);
-printf("%d: %s at %d ---- PMPI_File_write_at off=%lld  size=%d (%s)\n",my_rank,__func__,__LINE__, my_off, comp_buf_sz,(ret==MPI_SUCCESS)?"MPI_SUCCESS":"FAILED");
+printf("%d: %s at %d ---- PMPI_File_write_at_all off=%lld  size=%d (%s)\n",my_rank,__func__,__LINE__, my_off, comp_buf_sz,(ret==MPI_SUCCESS)?"MPI_SUCCESS":"FAILED");
             if(ret != MPI_SUCCESS)
                 ret = -1;
         }
@@ -1972,11 +1970,10 @@ printf("%d: %s at %d ---- PMPI_File_write_at off=%lld  size=%d (%s)\n",my_rank,_
             /* error during compression. preserve and return error to caller,
              * but participate in collective write to avoid deadlock.
              */
-            (void)PMPI_File_write_at(log_fh.mpi_fh, my_off,
+            (void)PMPI_File_write_at_all(log_fh.mpi_fh, my_off,
                 core->comp_buf, comp_buf_sz, MPI_BYTE, &status);
-printf("%d: %s at %d ---- PMPI_File_write_at off=%lld  size=%d (FAILED)\n",my_rank,__func__,__LINE__, my_off, comp_buf_sz);
+printf("%d: %s at %d ---- PMPI_File_write_at_all off=%lld  size=%d (FAILED)\n",my_rank,__func__,__LINE__, my_off, comp_buf_sz);
         }
-        PMPI_Barrier(core->mpi_comm);
 
         if(nprocs > 1)
         {
