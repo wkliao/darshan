@@ -47,7 +47,12 @@ jobs:
                                   CC=mpicc RUNTIME_CC=mpicc UTIL_CC=gcc
           make -s LIBTOOLFLAGS=--silent V=1 -j8
           make -s install
+      - name: test darshan_log_write
+        run: |
+          mpicc -O0 -g darshan_log_write.c -o darshan_log_write
+          /usr/bin/mpiexec --oversubscribe -n 4 darshan_log_write
       - name: make check
+        if: ${{ always() }}
         run: |
           cd darshan_build
           make check NP=4
