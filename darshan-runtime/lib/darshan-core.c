@@ -1896,7 +1896,7 @@ int wlen = (my_rank == 0) ? sizeof(struct darshan_header) : 0;
         /* write the header using MPI */
         ret = PMPI_File_write_at_all(log_fh.mpi_fh, 0, core->log_hdr_p,
             wlen, MPI_BYTE, &status);
-printf("%d: %s at %d ---- PMPI_File_write_at off=%d size=%zd (%s)\n",my_rank,__func__,__LINE__, 0, sizeof(struct darshan_header),(ret==MPI_SUCCESS)?"MPI_SUCCESS":"FAILED");
+printf("%d: %s at %d ---- PMPI_File_write_at_all off=%d size=%zd (%s)\n",my_rank,__func__,__LINE__, 0, wlen,(ret==MPI_SUCCESS)?"MPI_SUCCESS":"FAILED");
         if(ret != MPI_SUCCESS)
         {
             DARSHAN_WARN("error writing darshan log header");
@@ -1976,6 +1976,7 @@ printf("%d: %s at %d ---- PMPI_File_write_at_all off=%lld  size=%d (%s)\n",my_ra
                 core->comp_buf, comp_buf_sz, MPI_BYTE, &status);
 printf("%d: %s at %d ---- PMPI_File_write_at_all off=%lld  size=%d (FAILED)\n",my_rank,__func__,__LINE__, my_off, comp_buf_sz);
         }
+        PMPI_Barrier(core->mpi_comm);
 
         if(nprocs > 1)
         {
