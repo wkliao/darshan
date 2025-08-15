@@ -3,6 +3,9 @@
 # Generic script to automate building of Darshan
 #
 
+# Exit immediately if a command exits with a non-zero status.
+# set -e
+
 basedir=$PWD
 build_dir=$PWD/darshan_build
 script_dir=$(dirname $(realpath $0))
@@ -16,10 +19,13 @@ if [ -z "${DARSHAN_LOG_PATH}" ]; then
 fi
 
 # update generated configuration files
-cd $darshan_root_dir && ./prepare.sh && cd - > /dev/null
+# cd $darshan_root_dir && ./prepare.sh && cd - > /dev/null
 
 # create log file directory
 mkdir -p $DARSHAN_LOG_PATH
+
+set -x
+cd $darshan_root_dir && autoreconf -i
 
 # configure and build darshan-runtime (if not requested to skip)
 if [ ! -v DARSHAN_RUNTIME_SKIP ]; then
@@ -27,8 +33,9 @@ if [ ! -v DARSHAN_RUNTIME_SKIP ]; then
     if [ -z "${DARSHAN_RUNTIME_CONFIG_ARGS}" ]; then
         DARSHAN_RUNTIME_CONFIG_ARGS="--with-jobid-env=NONE --enable-apmpi-mod"
     fi
-    $darshan_root_dir/darshan-runtime/configure $DARSHAN_RUNTIME_CONFIG_ARGS --with-log-path=$DARSHAN_LOG_PATH --prefix=$DARSHAN_INSTALL_PREFIX
-    make install
+    $darshan_root_dir/darshan-runtime/configure --silent --enable-silent-rules $DARSHAN_RUNTIME_CONFIG_ARGS --with-log-path=$DARSHAN_LOG_PATH --prefix=$DARSHAN_INSTALL_PREFIX
+    make -s LIBTOOLFLAGS=--silent V=1 -j8
+    make -s install
 fi
 
 # configure and build darshan-util
@@ -36,5 +43,37 @@ mkdir -p $build_dir/darshan-util && cd $build_dir/darshan-util
 if [ -z "${DARSHAN_UTIL_CONFIG_ARGS}" ]; then
     DARSHAN_UTIL_CONFIG_ARGS="--enable-apmpi-mod --enable-apxc-mod"
 fi
-$darshan_root_dir/darshan-util/configure $DARSHAN_UTIL_CONFIG_ARGS --prefix=$DARSHAN_INSTALL_PREFIX
-make install
+$darshan_root_dir/darshan-util/configure --silent --enable-silent-rules $DARSHAN_UTIL_CONFIG_ARGS --prefix=$DARSHAN_INSTALL_PREFIX
+make -s LIBTOOLFLAGS=--silent V=1 -j8
+make -s install
+
+# run check
+make V=1 check
+
+# run "make check" for darshan-runtime must be done after darshan-util has been
+# built, as it used darshan-parser.
+if [ ! -v DARSHAN_RUNTIME_SKIP ]; then
+    cd $build_dir/darshan-runtime
+
+    # disable errexit, so we can dump make check log file
+    # unset +e
+
+    export LD_LIBRARY_PATH="$DARSHAN_INSTALL_PREFIX/lib:$LD_LIBRARY_PATH"
+
+    pre_ld_flags=`$DARSHAN_INSTALL_PREFIX/bin/darshan-config --pre-ld-flags`
+    echo "pre_ld_flags=$pre_ld_flags"
+
+    # run check
+    # make V=1 check LD_RUN_PATH="$DARSHAN_INSTALL_PREFIX/lib" LDFLAGS="$pre_ld_flags"
+    make V=1 check LD_RUN_PATH="$DARSHAN_INSTALL_PREFIX/lib"
+
+    check_status=$?
+
+    # dump make check log file
+    cat test/tst_runs.log
+
+    if test "x$check_status" != x0 ; then
+       exit $check_status
+    fi
+fi
+
