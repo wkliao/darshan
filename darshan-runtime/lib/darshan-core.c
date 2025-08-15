@@ -1889,12 +1889,13 @@ static int darshan_log_write_header(darshan_core_log_fh log_fh,
             PMPI_Reduce(
                 &(core->log_hdr_p->mod_ver), &(core->log_hdr_p->mod_ver),
                 DARSHAN_KNOWN_MODULE_COUNT, MPI_UINT32_T, MPI_MAX, 0, core->mpi_comm);
-            return(0); /* only rank 0 writes the header */
+            // return(0); /* only rank 0 writes the header */
         }
 
+int wlen = (my_rank == 0) ? sizeof(struct darshan_header) : 0;
         /* write the header using MPI */
-        ret = PMPI_File_write_at(log_fh.mpi_fh, 0, core->log_hdr_p,
-            sizeof(struct darshan_header), MPI_BYTE, &status);
+        ret = PMPI_File_write_at_all(log_fh.mpi_fh, 0, core->log_hdr_p,
+            wlen, MPI_BYTE, &status);
 printf("%d: %s at %d ---- PMPI_File_write_at off=%d size=%zd (%s)\n",my_rank,__func__,__LINE__, 0, sizeof(struct darshan_header),(ret==MPI_SUCCESS)?"MPI_SUCCESS":"FAILED");
         if(ret != MPI_SUCCESS)
         {
