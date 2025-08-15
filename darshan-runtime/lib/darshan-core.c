@@ -716,37 +716,20 @@ void darshan_core_shutdown(int write_log)
 #ifdef HAVE_MPI
         if(using_mpi)
         {
-            if(my_rank == 0)
-            {
-                PMPI_Reduce(MPI_IN_PLACE, &open_tm, 1,
-                    MPI_DOUBLE, MPI_MAX, 0, final_core->mpi_comm);
-                PMPI_Reduce(MPI_IN_PLACE, &header_tm, 1,
-                    MPI_DOUBLE, MPI_MAX, 0, final_core->mpi_comm);
-                PMPI_Reduce(MPI_IN_PLACE, &job_tm, 1,
-                    MPI_DOUBLE, MPI_MAX, 0, final_core->mpi_comm);
-                PMPI_Reduce(MPI_IN_PLACE, &rec_tm, 1,
-                    MPI_DOUBLE, MPI_MAX, 0, final_core->mpi_comm);
-                PMPI_Reduce(MPI_IN_PLACE, &all_tm, 1,
-                    MPI_DOUBLE, MPI_MAX, 0, final_core->mpi_comm);
+            double dval[5] = {open_tm, header_tm, job_tm, rec_tm, all_tm};
+            double maxval[5] = {open_tm, header_tm, job_tm, rec_tm, all_tm };
+            PMPI_Reduce(dval, maxval, 5, MPI_DOUBLE, MPI_MAX, 0, final_core->mpi_comm);
+            open_tm   = dval[0];
+            header_tm = dval[1];
+            job_tm    = dval[2];
+            rec_tm    = dval[3];
+            all_tm    = dval[4];
+            if (my_rank == 0) { /* let rank 0 report the timing info */
                 PMPI_Reduce(MPI_IN_PLACE, mod_tm, DARSHAN_KNOWN_MODULE_COUNT,
                     MPI_DOUBLE, MPI_MAX, 0, final_core->mpi_comm);
-            }
-            else
-            {
-                PMPI_Reduce(&open_tm, &open_tm, 1,
-                    MPI_DOUBLE, MPI_MAX, 0, final_core->mpi_comm);
-                PMPI_Reduce(&header_tm, &header_tm, 1,
-                    MPI_DOUBLE, MPI_MAX, 0, final_core->mpi_comm);
-                PMPI_Reduce(&job_tm, &job_tm, 1,
-                    MPI_DOUBLE, MPI_MAX, 0, final_core->mpi_comm);
-                PMPI_Reduce(&rec_tm, &rec_tm, 1,
-                    MPI_DOUBLE, MPI_MAX, 0, final_core->mpi_comm);
-                PMPI_Reduce(&all_tm, &all_tm, 1,
-                    MPI_DOUBLE, MPI_MAX, 0, final_core->mpi_comm);
+            } else {
                 PMPI_Reduce(mod_tm, mod_tm, DARSHAN_KNOWN_MODULE_COUNT,
                     MPI_DOUBLE, MPI_MAX, 0, final_core->mpi_comm);
-
-                /* let rank 0 report the timing info */
                 goto cleanup;
             }
         }
@@ -1690,6 +1673,7 @@ static int darshan_log_open(char *logfile_name, struct darshan_core_runtime *cor
         /* open the darshan log file for writing using MPI */
         ret = MPI_File_open(core->mpi_comm, logfile_name,
             MPI_MODE_CREATE | MPI_MODE_WRONLY | MPI_MODE_EXCL, info, &log_fh->mpi_fh);
+printf("%d: %s at %d ---- PMPI_File_open %s (%s)\n",my_rank,__func__,__LINE__,logfile_name,(ret==MPI_SUCCESS)?"MPI_SUCCESS":"FAILED");
         MPI_Info_free(&info);
         if(ret != MPI_SUCCESS)
             return(-1);
@@ -1740,6 +1724,7 @@ static int darshan_log_write_job_record(darshan_core_log_fh log_fh,
         {
             ret = PMPI_File_write_at(log_fh.mpi_fh, *inout_off, core->comp_buf,
                 comp_buf_sz, MPI_BYTE, &status);
+printf("%d: %s at %d ---- PMPI_File_write_at off=%ld size=%d (%s)\n",my_rank,__func__,__LINE__, *inout_off,comp_buf_sz,(ret==MPI_SUCCESS)?"MPI_SUCCESS":"FAILED");
             if(ret != MPI_SUCCESS)
             {
                 DARSHAN_WARN("error writing job record");
@@ -1909,6 +1894,7 @@ static int darshan_log_write_header(darshan_core_log_fh log_fh,
         /* write the header using MPI */
         ret = PMPI_File_write_at(log_fh.mpi_fh, 0, core->log_hdr_p,
             sizeof(struct darshan_header), MPI_BYTE, &status);
+printf("%d: %s at %d ---- PMPI_File_write_at off=%d size=%zd (%s)\n",my_rank,__func__,__LINE__, 0, sizeof(struct darshan_header),(ret==MPI_SUCCESS)?"MPI_SUCCESS":"FAILED");
         if(ret != MPI_SUCCESS)
         {
             DARSHAN_WARN("error writing darshan log header");
@@ -1975,6 +1961,7 @@ static int darshan_log_append(darshan_core_log_fh log_fh, struct darshan_core_ru
             /* no compression errors, proceed with the collective write */
             ret = PMPI_File_write_at_all(log_fh.mpi_fh, my_off,
                 core->comp_buf, comp_buf_sz, MPI_BYTE, &status);
+printf("%d: %s at %d ---- PMPI_File_write_at_all off=%lld  size=%d (%s)\n",my_rank,__func__,__LINE__, my_off, comp_buf_sz,(ret==MPI_SUCCESS)?"MPI_SUCCESS":"FAILED");
             if(ret != MPI_SUCCESS)
                 ret = -1;
         }
@@ -1985,6 +1972,7 @@ static int darshan_log_append(darshan_core_log_fh log_fh, struct darshan_core_ru
              */
             (void)PMPI_File_write_at_all(log_fh.mpi_fh, my_off,
                 core->comp_buf, comp_buf_sz, MPI_BYTE, &status);
+printf("%d: %s at %d ---- PMPI_File_write_at_all off=%lld  size=%d (FAILED)\n",my_rank,__func__,__LINE__, my_off, comp_buf_sz);
         }
 
         if(nprocs > 1)
