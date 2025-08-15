@@ -1701,6 +1701,7 @@ static int darshan_log_write_job_record(darshan_core_log_fh log_fh,
     int ret;
 
 #ifdef HAVE_MPI
+    if (using_mpi) PMPI_Barrier(core->mpi_comm);
     /* only rank 0 writes the job record */
     if (using_mpi && my_rank > 0)
         return(0);
