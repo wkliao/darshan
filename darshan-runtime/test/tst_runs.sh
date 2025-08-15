@@ -61,7 +61,8 @@ echo "IS_OPENMPI=$IS_OPENMPI"
 if test "x$IS_OPENMPI" != x ; then
    # MCA_HINT="--mca io_ompio_num_aggregators=4"
    # TESTMPIRUN="$TESTMPIRUN $MCA_HINT --oversubscribe"
-   TESTMPIRUN="$TESTMPIRUN --oversubscribe"
+   MCA_HINT="--mca fbtl_posix_read_datasieving 0"
+   TESTMPIRUN="$TESTMPIRUN $MCA_HINT --oversubscribe"
 fi
 # export DARSHAN_LOGHINTS=""
 
