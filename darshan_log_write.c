@@ -53,6 +53,13 @@ int main(int argc, char **argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &np);
 
+    if (np != 4) {
+        if (rank == 0)
+            printf("Error: this program must run on 4 MPI processes\n");
+        MPI_Finalize();
+        return 1;
+    }
+
     MPI_Info_create(&info);
     MPI_Info_set(info, "cb_nodes", "4");
     MPI_Info_set(info, "romio_no_indep_rw", "true");
@@ -81,24 +88,29 @@ int main(int argc, char **argv)
     offsets[3][3] =3319; lengths[3][3] =63;
 */
 
+    /* rank 0's write requests calling MPI_File_write_at() */
     record_off = 1328; record_len = 246;
     header_off = 0;    header_len = 1328;
 
+    /* rank 0's write requests calling MPI_File_write_at_all() */
     offsets[0][0] =1574; lengths[0][0] =218;
     offsets[0][1] =2235; lengths[0][1] =303;
     offsets[0][2] =2849; lengths[0][2] =106;
     offsets[0][3] =2955; lengths[0][3] =62;
 
+    /* rank 1's write requests calling MPI_File_write_at_all() */
     offsets[1][0] =1792; lengths[1][0] =146;
     offsets[1][1] =2538; lengths[1][1] =104;
     offsets[1][2] =2955; lengths[1][2] =0;
     offsets[1][3] =3017; lengths[1][3] =60;
 
+    /* rank 2's write requests calling MPI_File_write_at_all() */
     offsets[2][0] =1938; lengths[2][0] =148;
     offsets[2][1] =2642; lengths[2][1] =105;
     offsets[2][2] =2955; lengths[2][2] =0;
     offsets[2][3] =3077; lengths[2][3] =62;
 
+    /* rank 3's write requests calling MPI_File_write_at_all() */
     offsets[3][0] =2086; lengths[3][0] =149;
     offsets[3][1] =2747; lengths[3][1] =102;
     offsets[3][2] =2955; lengths[3][2] =0;
