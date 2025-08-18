@@ -15,6 +15,8 @@
         char errorString[MPI_MAX_ERROR_STRING]; \
         MPI_Error_string(err, errorString, &errorStringLen); \
         printf("Error at line %d when calling %s: %s\n",__LINE__,fnc,errorString); \
+        err = -1; \
+        goto err_out; \
     } \
 }
 
@@ -26,6 +28,7 @@
     for (k=0; k<length; k++) { \
         if (ptr[k] != expect) { \
             printf("Error at line %d: off=%d expect %c but got %c\n", __LINE__, offset+k, expect, ptr[k]); \
+            err = -1; \
             goto err_out; \
         } \
     } \
@@ -39,7 +42,7 @@
 int main(int argc, char **argv)
 {
     char buf[NELEMS], *filename="testfie";
-    int i, j, err, rank, np, omode;
+    int i, j, err=0, rank, np, omode;
     MPI_Offset offset;
     MPI_Count nbytes;
     MPI_File fh;
@@ -148,6 +151,7 @@ int main(int argc, char **argv)
         int fd = open(filename, O_RDONLY, 0600);
         if (fd < 0) {
             printf("Error at line %d : opening file %s (%s)\n", __LINE__, filename, strerror(errno));
+            err = -1;
             goto err_out;
         }
 
@@ -160,7 +164,8 @@ int main(int argc, char **argv)
             char expect = i % 128;
             if (buf[i] != expect) {
                 printf("Error at line %d: off=%d expect %d but got %d\n", __LINE__, i, expect, buf[i]);
-                goto err_out;
+                err = -1;
+                // goto err_out;
             }
         }
     }
@@ -168,7 +173,7 @@ int main(int argc, char **argv)
 err_out:
     MPI_Info_free(&info);
     MPI_Finalize();
-    return 0;
+    return (err != 0);
 }
 
 
