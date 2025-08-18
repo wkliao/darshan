@@ -9,7 +9,7 @@ on:
       - main
 
 env:
-   OPENMPI_VERSION: 5.0.3
+   OPENMPI_VERSION: 5.0.5
 
 jobs:
   end_to_end_regression:
