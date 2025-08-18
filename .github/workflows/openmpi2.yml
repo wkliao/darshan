@@ -28,6 +28,15 @@ jobs:
           ompi_info --param fs       all --level 9
           ompi_info --param fbtl     all --level 9
           ompi_info --param sharedfp all --level 9
+      - name: test darshan_log_write
+        run: |
+          mpicc -O0 -g darshan_log_write.c -o darshan_log_write
+          rm -f testfie
+          /usr/bin/mpiexec --oversubscribe -n 4 darshan_log_write
+          rm -f testfie
+          /usr/bin/mpiexec --oversubscribe -n 4 darshan_log_write
+          rm -f testfie
+          /usr/bin/mpiexec --oversubscribe -n 4 darshan_log_write
       - name: Initialize Darshan
         run: |
           git submodule update --init
@@ -47,15 +56,6 @@ jobs:
                                   CC=mpicc RUNTIME_CC=mpicc UTIL_CC=gcc
           make -s LIBTOOLFLAGS=--silent V=1 -j8
           make -s install
-      - name: test darshan_log_write
-        run: |
-          mpicc -O0 -g darshan_log_write.c -o darshan_log_write
-          rm -f testfie
-          /usr/bin/mpiexec --oversubscribe -n 4 darshan_log_write
-          rm -f testfie
-          /usr/bin/mpiexec --oversubscribe -n 4 darshan_log_write
-          rm -f testfie
-          /usr/bin/mpiexec --oversubscribe -n 4 darshan_log_write
       - name: make check
         if: ${{ always() }}
         run: |
