@@ -83,10 +83,8 @@ Compilation
 
     tar -xvzf darshan-<version-number>.tar.gz
     cd darshan-<version-number>/
-    ./prepare.sh
-    cd darshan-runtime/
     ./configure --with-log-path=/darshan-logs --with-jobid-env=PBS_JOBID CC=mpicc
-    make
+    make -j 8
     make install
 
 
@@ -96,14 +94,14 @@ Compilation
 
     tar -xvzf darshan-<version-number>.tar.gz
     cd darshan-<version-number>/
-    ./prepare.sh
-    cd darshan-runtime/
     ./configure --with-log-path=/darshan-logs --with-jobid-env=PBS_JOBID --without-mpi CC=gcc
-    make
+    make -j 8
     make install
 
 **Explanation of configure arguments:**
 
+* ``--disable-darshan-util``: Build without Darshan utility tools
+  (default: enable).
 * ``--with-mem-align=NUM``: This value is system-dependent and will be used by
   Darshan to determine if the buffer for a read or write operation is
   aligned in memory (default is 8).
@@ -858,7 +856,7 @@ path, respectively.
         --with-jobid-env=SLURM_JOBID \
         --with-username-env=SLURM_JOB_USER \
         CC=cc
-    make install
+    make -j 8 install
     module swap PrgEnv-gnu PrgEnv-pgi
 
 
