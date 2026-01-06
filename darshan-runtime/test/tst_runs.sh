@@ -310,7 +310,7 @@ for exe in ${check_PROGRAMS} ; do
       DARSHAN_LOG_FILE="${TST_DARSHAN_LOG_PATH}/${USERNAME_ENV}_${exe}*"
       echo "DARSHAN_LOG_FILE=$DARSHAN_LOG_FILE"
 
-      DARSGAN_FIELD=MPIIO_BYTES_WRITTEN
+      DARSHAN_FIELD=MPIIO_BYTES_WRITTEN
       for opt in "" ${OPTS} ; do
           if test "x$opt" = x ; then
              CMD="${TESTMPIRUN} -n ${NP} ./$exe $TEST_FILE"
@@ -329,7 +329,7 @@ for exe in ${check_PROGRAMS} ; do
           else
              echo "parsing ${DARSHAN_LOG_FILE}"
              EXPECT_NBYTE=`stat -c %s $TEST_FILE`
-             nbytes=`$DARSHAN_PARSER ${DARSHAN_LOG_FILE} | grep $DARSGAN_FIELD | cut -f5`
+             nbytes=`$DARSHAN_PARSER ${DARSHAN_LOG_FILE} | grep $DARSHAN_FIELD | cut -f5`
              # echo "EXPECT_NBYTE=$EXPECT_NBYTE nbytes=$nbytes"
              if test "x$nbytes" != "x$EXPECT_NBYTE" ; then
                 echo "Error: CMD=$CMD nbytes=$nbytes"
@@ -338,7 +338,7 @@ for exe in ${check_PROGRAMS} ; do
           fi
       done
 
-      DARSGAN_FIELD=MPIIO_BYTES_READ
+      DARSHAN_FIELD=MPIIO_BYTES_READ
       EXPECT_NBYTE=`stat -c %s $TEST_FILE`
       for opt in "" ${OPTS} ; do
           if test "x$opt" = x ; then
@@ -354,7 +354,7 @@ for exe in ${check_PROGRAMS} ; do
              echo "Warning: darshan-parser is not available, skip test"
           else
              echo "parsing ${DARSHAN_LOG_FILE}"
-             nbytes=`$DARSHAN_PARSER ${DARSHAN_LOG_FILE} | grep $DARSGAN_FIELD | cut -f5`
+             nbytes=`$DARSHAN_PARSER ${DARSHAN_LOG_FILE} | grep $DARSHAN_FIELD | cut -f5`
              # echo "EXPECT_NBYTE=$EXPECT_NBYTE nbytes=$nbytes"
              if test "x$nbytes" != "x$EXPECT_NBYTE" ; then
                 echo "Error: CMD=$CMD nbytes=$nbytes"
