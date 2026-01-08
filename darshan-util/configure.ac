@@ -108,12 +108,6 @@ if test "x$enable_darshan_util" = xyes ; then
                       [enables compilation and use of the AutoPerf MPI module])],
       [], [enable_apmpi_mod=no]
    )
-   if test "x$enable_apmpi_mod" = xyes; then
-      AC_CHECK_FILE([${ac_abs_confdir}/../modules/autoperf/apmpi/darshan-apmpi-log-format.h],
-                    DARSHAN_USE_APMPI=1,
-                    [AC_MSG_ERROR([The autoperf MPI module is not present])])
-   fi
-
    AC_CHECK_FUNCS([strndup])
 
    DARSHAN_UTIL_VERSION="AC_PACKAGE_VERSION"

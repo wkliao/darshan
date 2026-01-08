@@ -299,11 +299,6 @@ if test "x$enable_darshan_runtime" = xyes ; then
       if test "x$ENABLE_MPI" = xno ; then
          AC_MSG_ERROR([--enable-apmpi-mod Autoperf MPI module requires MPI support])
       fi
-      abssrcdir=$(readlink -f ${srcdir})
-      AC_CHECK_FILE([${abssrcdir}/../modules/autoperf/apmpi/darshan-apmpi-log-format.h],
-                    [],
-                    [AC_MSG_ERROR([The Autoperf MPI module is not present])])
-
       # APMPI only support MPI v3 or higher
       AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
          #include <mpi.h>
@@ -312,23 +307,6 @@ if test "x$enable_darshan_runtime" = xyes ; then
          #endif]])], [],
          [AC_MSG_ERROR([APMPI module requires MPI version 3+.])]
       )
-
-      AC_MSG_CHECKING([whether patching darshan-apmpi.c is necessary])
-      submod_status="m4_esyscmd_s([git submodule status])"
-      apmpi_mod_sha=`echo ${submod_status} | cut -d' ' -f1`
-
-      if test "x$apmpi_mod_sha" = x8623a0652735785fe87d89514112e43e4f52a78d ; then
-         apply_apmpi_patch=yes
-      else
-         # check if git HAED of autoperf is a descendent of 8623a06
-         ac_flag=m4_esyscmd_s([cd ../modules/autoperf && git merge-base --is-ancestor 8623a0652735785fe87d89514112e43e4f52a78d HEAD && echo "$?"])
-         if test "x$ac_flag" = x0 ; then
-            apply_apmpi_patch=no
-         else
-            apply_apmpi_patch=yes
-         fi
-      fi
-      AC_MSG_RESULT([$apply_apmpi_patch])
    fi
 
    AC_ARG_ENABLE([apmpi-coll-sync],
@@ -1049,7 +1027,6 @@ AM_CONDITIONAL(BUILD_BGQ_MODULE,    [test "x$enable_bgq_mod"     = xyes])
 AM_CONDITIONAL(BUILD_LUSTRE_MODULE, [test "x$enable_lustre_mod"  = xyes])
 AM_CONDITIONAL(BUILD_MDHIM_MODULE,  [test "x$enable_mdhim_mod"   = xyes])
 AM_CONDITIONAL(BUILD_APMPI_MODULE,  [test "x$enable_apmpi_mod"   = xyes])
-AM_CONDITIONAL(PATCH_APMPI_MODULE,  [test "x$apply_apmpi_patch"  = xyes])
 AM_CONDITIONAL(BUILD_APXC_MODULE,   [test "x$enable_apxc_mod"    = xyes])
 AM_CONDITIONAL(BUILD_HEATMAP_MODULE,[test "x$enable_heatmap_mod" = xyes])
 AM_CONDITIONAL(BUILD_DAOS_MODULE,   [test "x$enable_daos_mod"    = xyes])
