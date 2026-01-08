@@ -14,7 +14,7 @@ if BUILD_MPIIO_MODULE
    tst_mpi_init_SOURCES = tst_mpi_init.c
    tst_mpi_io_SOURCES = tst_mpi_io.c
 
-   TESTS = tst_runs.sh
+   TESTS = tst_runs.sh tst_log_path.sh
 else
    TESTS =
 endif
@@ -29,7 +29,7 @@ AM_TESTS_ENVIRONMENT += export check_PROGRAMS="$(check_PROGRAMS)";
 
 TEST_EXTENSIONS = .sh
 
-EXTRA_DIST = tst_runs.sh
+EXTRA_DIST = tst_runs.sh tst_log_path.sh
 
 CLEANFILES = testfile.dat
 
