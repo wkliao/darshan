@@ -106,7 +106,7 @@ endif
 darshan-apxc-logutils.c:
 	$(LN_S) $(apxc_root)/util/darshan-apxc-logutils.c .
 
-apmpi_root = $(top_srcdir)/../modules/autoperf/apmpi
+apmpi_root = $(top_srcdir)/../autoperf/apmpi
 if DARSHAN_USE_APMPI
    include_HEADERS += $(apmpi_root)/darshan-apmpi-log-format.h \
                       $(apmpi_root)/util/darshan-apmpi-logutils.h
