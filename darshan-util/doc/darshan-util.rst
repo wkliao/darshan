@@ -81,16 +81,6 @@ compilation.
   modules (default: disable).
 * ``--enable-apxc-mod``: Build darshan-util with support for AutoPerf APXC
   modules (default: disable).
-
-  .. note::
-     AutoPerf log analysis code is provided as Git submodules to Darshan's main
-     repository, so if building Darshan source that has been cloned from Git,
-     it is necessary to first retrieve the AutoPerf submodules by running the
-     following command:
-
-     .. code-block:: bash
-
-        git submodule update --init
 * ``--enable-pydarshan``: Build pydarshan module and tools (default: disable).
 * ``--with-zlib=DIR``: root directory path of zlib installation (default:
   /usr/local or /usr if not found in /usr/local).

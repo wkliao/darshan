@@ -571,16 +571,6 @@ applications are spending a lot of time synchronizing as part of collective
 communication calls. For this reason, we do not recommend users setting this
 particular option for production Darshan deployments.
 
-.. note::
-    The AutoPerf instrumentation modules are provided as Git submodules to
-    Darshan's main repository, so if building Darshan source that has been
-    cloned from Git, it is necessary to first retrieve the AutoPerf submodules
-    by running the following command:
-
-    .. code-block:: bash
-
-        git submodule update --init
-
 
 .. _Sec Conf Runtime:
 
