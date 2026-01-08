@@ -923,7 +923,6 @@ if test "x$enable_darshan_runtime" = xyes ; then
    AC_SUBST(DARSHAN_HDF5_LD_FLAGS)
    AC_SUBST(DARSHAN_PNETCDF_LD_FLAGS)
    AC_SUBST(DARSHAN_LUSTRE_LD_FLAGS)
-   AC_SUBST(with_papi)
 else
    enable_mmap_logs=no
    enable_ld_preload=no
