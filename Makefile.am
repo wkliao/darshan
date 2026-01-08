@@ -5,7 +5,7 @@
 
 ACLOCAL_AMFLAGS = -I maint/config
 
-SUBDIRS = .
+SUBDIRS = autoperf
 
 if BUILD_DARSHAN_RUNTIME
    SUBDIRS += darshan-runtime
