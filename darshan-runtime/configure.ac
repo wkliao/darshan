@@ -318,32 +318,6 @@ if test "x$enable_darshan_runtime" = xyes ; then
       AC_DEFINE(__APMPI_COLL_SYNC, 1, Define if APMPI should enable sync time calculation for MPI collectives)
    fi
 
-   #AUTOPERF XC module
-   AC_ARG_ENABLE([apxc-mod],
-      [AS_HELP_STRING([--enable-apxc-mod],
-                      [Enables compilation and use of AUTOPERF XC module (requires MPI)])],
-      [], [enable_apxc_mod=no]
-   )
-   if test "x$enable_apxc_mod" = xyes ; then
-      if test "x$ENABLE_MPI" = xno ; then
-         AC_MSG_ERROR([--enable-apxc-mod Autoperf XC module requires MPI support])
-      fi
-      with_papi=`pkg-config --libs papi`
-      if test "x$?" = x0 ; then
-         CPPFLAGS+=`pkg-config --cflags papi`
-         papi_version=`pkg-config --modversion papi`
-      else
-         AC_CHECK_HEADER([papi.h],
-                         [with_papi=-lpapi],
-                         [AC_MSG_ERROR([Cannot find papi header required for Autoperf XC module])],
-                         [])
-      fi
-      abssrcdir=$(readlink -f ${srcdir})
-      AC_CHECK_FILE([${abssrcdir}/../modules/autoperf/apxc/darshan-apxc-log-format.h],
-                    [],
-                    [AC_MSG_ERROR([The Autoperf XC git submodule is not present])])
-   fi
-
    # inform about HDF5 installs not found in default locations
    AC_ARG_WITH([hdf5],
       [AS_HELP_STRING([--with-hdf5=DIR],
@@ -960,7 +934,6 @@ else
    enable_heatmap_mod=no
    enable_mpiio_mod=no
    enable_apmpi_mod=no
-   enable_apxc_mod=no
    enable_hdf5_mod=no
    enable_pnetcdf_mod=no
    enable_bgq_mod=no
@@ -989,7 +962,6 @@ AC_SUBST(ENABLE_HEATMAP_MOD, ["$enable_heatmap_mod"])
 AC_SUBST(ENABLE_MPIIO_MOD, ["$enable_mpiio_mod"])
 AC_SUBST(ENABLE_APMPI_MOD, ["$enable_apmpi_mod"])
 AC_SUBST(ENABLE_APMPI_COLL_SYNC, ["$enable_apmpi_coll_sync"])
-AC_SUBST(ENABLE_APXC_MOD, ["$enable_apxc_mod"])
 AC_SUBST(ENABLE_HDF5_MOD, ["$enable_hdf5_mod"])
 AC_SUBST(ENABLE_PNETCDF_MOD, ["$enable_pnetcdf_mod"])
 AC_SUBST(ENABLE_DAOS_MOD, ["$enable_daos_mod"])
@@ -1027,7 +999,6 @@ AM_CONDITIONAL(BUILD_BGQ_MODULE,    [test "x$enable_bgq_mod"     = xyes])
 AM_CONDITIONAL(BUILD_LUSTRE_MODULE, [test "x$enable_lustre_mod"  = xyes])
 AM_CONDITIONAL(BUILD_MDHIM_MODULE,  [test "x$enable_mdhim_mod"   = xyes])
 AM_CONDITIONAL(BUILD_APMPI_MODULE,  [test "x$enable_apmpi_mod"   = xyes])
-AM_CONDITIONAL(BUILD_APXC_MODULE,   [test "x$enable_apxc_mod"    = xyes])
 AM_CONDITIONAL(BUILD_HEATMAP_MODULE,[test "x$enable_heatmap_mod" = xyes])
 AM_CONDITIONAL(BUILD_DAOS_MODULE,   [test "x$enable_daos_mod"    = xyes])
 AM_CONDITIONAL(HAVE_LDMS,           [test "x$enable_ldms_mod"    = xyes])
@@ -1084,11 +1055,6 @@ if test "x$enable_darshan_runtime" = xyes ; then
          enable_apmpi_mod="yes (collective sync mode)"
       fi
    fi
-   if test "x$enable_apxc_mod" = xyes ; then
-      if test -n "$papi_version" ; then
-         enable_apxc_mod="yes (using papi $papi_version)"
-      fi
-   fi
    echo "------------------------------------------------------------------------------
    ${PACKAGE_NAME} Version ${PACKAGE_VERSION} configured with the following features:"
    if test "x$ENABLE_MPI" = xyes ; then
@@ -1106,7 +1072,6 @@ if test "x$enable_darshan_runtime" = xyes ; then
            DXT           module support  - $enable_dxt_mod
            MPI-IO        module support  - $enable_mpiio_mod
            AUTOPERF MPI  module support  - $enable_apmpi_mod
-           AUTOPERF XC   module support  - $enable_apxc_mod
            PnetCDF       module support  - $enable_pnetcdf_mod
            HDF5          module support  - $enable_hdf5_mod
            Lustre        module support  - $enable_lustre_mod
