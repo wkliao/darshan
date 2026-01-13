@@ -784,6 +784,20 @@ runtime:
    `regex.h manpage <https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/regex.h.html>`_
    for more details on regex syntax.
 
+.. note::
+    **Log path setting** -- There are 4 ways to set the directory location for
+    storing the Darshan log files.
+
+    1. Set in the environment variable ``DARSHAN_LOGPATH`` at the run time.
+    2. Set as the value of variable``LOGPATH`` in a file pointed by the
+       environment variable ``DARSHAN_CONFIG_PATH`` set at the run time.
+    3. Set by option ``--with-log-path-by-env`` at the configure time and the
+       named environment variable is set at the run time.
+    4. Set by option ``--with-log-path`` at the configure time.
+
+    The precedence is 1 > 2 > 3 > 4. That is, the environment variable
+    ``DARSHAN_LOGPATH`` takes the highest precedence, The path set in
+    ``--with-log-path`` at the configure time takes the lowest.
 
 Example Darshan configuration
 ----------------------------------------
