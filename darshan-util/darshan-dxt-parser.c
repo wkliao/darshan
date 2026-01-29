@@ -221,7 +221,7 @@ int main(int argc, char **argv)
                 printf(
                        "\n# To avoid this error, consult the darshan-runtime\n"
                        "# documentation and consider setting the\n"
-                       "# DARSHAN_EXCLUDE_DIRS or DXT_TRIGGER_CONF_PATH\n"
+                       "# DARSHAN_EXCLUDE_DIRS\n"
                        "# environment variable to prevent Darshan from\n"
                        "# instrumenting unecessary files.\n");
             }
@@ -236,7 +236,7 @@ int main(int argc, char **argv)
                 fprintf(stderr,
                        "\n# To avoid this error, consult the darshan-runtime\n"
                        "# documentation and consider setting the\n"
-                       "# DARSHAN_EXCLUDE_DIRS or DXT_TRIGGER_CONF_PATH\n"
+                       "# DARSHAN_EXCLUDE_DIRS\n"
                        "# environment variable to prevent Darshan from\n"
                        "# instrumenting unecessary files.\n");
                 fprintf(stderr,
