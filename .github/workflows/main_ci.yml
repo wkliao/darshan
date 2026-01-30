@@ -18,6 +18,7 @@ on:
 jobs:
   test_pydarshan:
     strategy:
+      fail-fast: false # This disables the default cancel-on-failure behavior
       matrix:
         platform: [ubuntu-latest,
                    macos-latest]
