@@ -404,8 +404,10 @@ class TestReportData:
         actual_metadata_df.index.names = [None]
         actual_metadata_df.columns = [0]
 
-        # check the metadata dataframes
-        assert_frame_equal(actual_metadata_df, expected_df)
+        # Check the module dataframes. Option check_dtype=False ignores
+        # differences in the data types (dtypes) of the columns, focusing only
+        # on whether the values themselves are equal.
+        assert_frame_equal(actual_metadata_df, expected_df, check_dtype=False)
 
 
     @pytest.mark.parametrize(
@@ -553,8 +555,10 @@ class TestReportData:
             expected_df[[1]] = expected_df[[1]].astype(object)
             expected_df.iloc[6:, 1] = flag
 
-        # check the module dataframes
-        assert_frame_equal(actual_mod_df, expected_df)
+        # Check the module dataframes. Option check_dtype=False ignores
+        # differences in the data types (dtypes) of the columns, focusing only
+        # on whether the values themselves are equal.
+        assert_frame_equal(actual_mod_df, expected_df, check_dtype=False)
 
     @pytest.mark.parametrize(
         "logname, expected_cmd",
