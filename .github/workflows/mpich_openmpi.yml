@@ -58,7 +58,6 @@ jobs:
           make -s -j 8 distclean >> qout 2>&1
       - name: Initialize Darshan
         run: |
-          git submodule update --init
           autoreconf -i
       - name: Build Darshan using MPICH
         run: |
