@@ -81,26 +81,29 @@ endif
 
 CLEANFILES = darshan-pnetcdf-api.c
 
+nodist_libdarshan_la_SOURCES =
+nodist_libdarshan_a_SOURCES =
+
 include_HEADERS =
 apxc_root = $(top_srcdir)/../modules/autoperf/apxc
 if BUILD_APXC_MODULE
    include_HEADERS += $(apxc_root)/darshan-apxc-log-format.h \
                       $(apxc_root)/lib/darshan-apxc-utils.h
-   BUILT_SOURCES += darshan-apxc.c
    CLEANFILES += darshan-apxc.c
-   C_SRCS += darshan-apxc.c
+   nodist_libdarshan_la_SOURCES += darshan-apxc.c
+   nodist_libdarshan_a_SOURCES += darshan-apxc.c
    AM_CPPFLAGS += -DDARSHAN_USE_APXC \
                   -I$(apxc_root) -I$(apxc_root)/lib
 endif
 darshan-apxc.c:
-	$(LN_S) $(apxc_root)/lib/darshan-apxc.c .
+	$(LN_S) $(apxc_root)/lib/darshan-apxc.c $@
 
 apmpi_root = $(top_srcdir)/../modules/autoperf/apmpi
 if BUILD_APMPI_MODULE
    include_HEADERS += $(apmpi_root)/darshan-apmpi-log-format.h
-   BUILT_SOURCES += darshan-apmpi.c
    CLEANFILES += darshan-apmpi.c
-   C_SRCS += darshan-apmpi.c
+   nodist_libdarshan_la_SOURCES += darshan-apmpi.c
+   nodist_libdarshan_a_SOURCES += darshan-apmpi.c
    AM_CPPFLAGS += -DDARSHAN_USE_APMPI \
                   -I$(apmpi_root) -I$(apmpi_root)/lib
 endif

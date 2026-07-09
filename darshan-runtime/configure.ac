@@ -314,19 +314,31 @@ if test "x$enable_darshan_runtime" = xyes ; then
       )
 
       AC_MSG_CHECKING([whether patching darshan-apmpi.c is necessary])
-      submod_status="m4_esyscmd_s([git submodule status])"
-      apmpi_mod_sha=`echo ${submod_status} | cut -d' ' -f1`
+      # check if command git is available.
+      is_srcdir_git_clone=
+      AC_CHECK_PROG(GIT_CMD, git, git)
+      if test "x$GIT_CMD" != x ; then
+         # Check if folder ${srcdir} is in a git repository clone
+         is_srcdir_git_clone=`git -C ${srcdir} rev-parse --is-inside-work-tree 2>/dev/null`
+      fi
+      apply_apmpi_patch=no
+      if test "x${is_srcdir_git_clone}" = xtrue ; then
+         submod_status=`git submodule status`
+         apmpi_mod_sha=`echo ${submod_status} | cut -d' ' -f1`
 
-      if test "x$apmpi_mod_sha" = x8623a0652735785fe87d89514112e43e4f52a78d ; then
-         apply_apmpi_patch=yes
-      else
-         # check if git HAED of autoperf is a descendent of 8623a06
-         ac_flag=m4_esyscmd_s([cd ../modules/autoperf && git merge-base --is-ancestor 8623a0652735785fe87d89514112e43e4f52a78d HEAD && echo "$?"])
-         if test "x$ac_flag" = x0 ; then
-            apply_apmpi_patch=no
-         else
+         if test "x$apmpi_mod_sha" = x8623a0652735785fe87d89514112e43e4f52a78d ; then
             apply_apmpi_patch=yes
+         else
+            # check if git HAED of autoperf is a descendent of 8623a06
+            ac_flag=`cd ../modules/autoperf && git merge-base --is-ancestor 8623a0652735785fe87d89514112e43e4f52a78d HEAD && echo "$?"`
+            if test "x$ac_flag" = x0 ; then
+               apply_apmpi_patch=no
+            else
+               apply_apmpi_patch=yes
+            fi
          fi
+      elif test "x${PACKAGE_VERSION}" = "x3.5.0" ; then
+         apply_apmpi_patch=yes
       fi
       AC_MSG_RESULT([$apply_apmpi_patch])
    fi
