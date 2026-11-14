@@ -45,7 +45,7 @@ jobs:
           export DARSHAN_INSTALL_PREFIX=${GITHUB_WORKSPACE}/darshan_install
           darshan-test/automated/build-darshan.sh
           # try to format log directory to ensure this works
-          ./darshan_install/bin/darshan-mk-log-dirs.pl
+          ${DARSHAN_INSTALL_PREFIX}/bin/darshan-mk-log-dirs.pl
       - name: Run end-to-end regression tests (ld_preload)
         run: |
           export DARSHAN_INSTALL_PATH=${GITHUB_WORKSPACE}/darshan_install
